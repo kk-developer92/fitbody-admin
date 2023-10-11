@@ -1,7 +1,6 @@
 <template>
-    <div>
-        <nuxt-layout>
-        </nuxt-layout>
+    <div class="w-full">
+        <nuxt-layout/>
     </div>
 </template>
 

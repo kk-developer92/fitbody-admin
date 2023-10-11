@@ -1,7 +1,5 @@
 <template>
-    <div class="py-6">
-        <h1>Courses</h1>
-    </div>
+
 </template>
 
 <script setup lang="ts">

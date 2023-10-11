@@ -2,3 +2,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+.router-link-exact-active {
+    @apply text-red-500 font-bold
+}
