@@ -8,5 +8,6 @@ export default defineNuxtConfig({
             autoprefixer: {},
         },
     },
-    srcDir: 'src/'
+    srcDir: 'src/',
+    ssr: false
 })

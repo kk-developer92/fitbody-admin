@@ -2,10 +2,18 @@
     <div class="w-[90%] mx-auto py-4">
         <div class="w-full">
             <div class="flex gap-3">
-                <nuxt-link href="/">Курсы</nuxt-link>
-                <nuxt-link href="/trainings">Тренировка</nuxt-link>
-                <nuxt-link href="/nutrition">Питание</nuxt-link>
-                <nuxt-link href="/exercises">Упражнения</nuxt-link>
+                <nuxt-link href="/" :class="{
+                    'router-link-exact-active': isActive('courses')
+                }">Курсы</nuxt-link>
+                <nuxt-link href="/trainings" :class="{
+                    'router-link-exact-active': isActive('trainings')
+                }">Тренировка</nuxt-link>
+                <nuxt-link href="/nutrition" :class="{
+                    'router-link-exact-active': isActive('nutrition')
+                }">Питание</nuxt-link>
+                <nuxt-link href="/exercises" :class="{
+                    'router-link-exact-active': isActive('exercises')
+                }">Упражнения</nuxt-link>
             </div>
         </div>
         <nuxt-page></nuxt-page>
@@ -14,6 +22,11 @@
 
 <script setup lang="ts">
 
+const isActive = (route: string) => {
+    const router = useRoute();
+
+    return router.fullPath.includes(route);
+}
 </script>
 
 <style scoped>

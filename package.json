@@ -17,5 +17,15 @@
         "tailwindcss": "^3.3.3",
         "vue": "^3.3.4",
         "vue-router": "^4.2.5"
+    },
+    "dependencies": {
+        "@ckeditor/ckeditor5-basic-styles": "^40.0.0",
+        "@ckeditor/ckeditor5-build-classic": "^40.0.0",
+        "@ckeditor/ckeditor5-editor-classic": "^40.0.0",
+        "@ckeditor/ckeditor5-essentials": "^40.0.0",
+        "@ckeditor/ckeditor5-link": "^40.0.0",
+        "@ckeditor/ckeditor5-paragraph": "^40.0.0",
+        "@ckeditor/ckeditor5-vue": "^5.1.0",
+        "axios": "^1.5.1"
     }
 }
