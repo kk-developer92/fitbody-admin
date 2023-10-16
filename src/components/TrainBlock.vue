@@ -1,5 +1,5 @@
 <template>
-    <nuxt-link class="rounded-xl relative" v-for="course in props.courses" :href="'courses/' + course?._id">
+    <nuxt-link class="rounded-xl relative" v-for="course in props.courses" :href="`${props.path}/` + course?._id">
         <img :src="course.image" class="rounded-xl w-full h-72 object-cover" alt="">
         <div class="absolute bottom-4 left-4 font-medium">
             <span class="text-white text-xl">{{ course.title }}</span>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ courses: any }>()
+const props = defineProps<{ courses: any, path: string }>()
 </script>
 
 <style scoped>

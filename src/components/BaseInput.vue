@@ -1,7 +1,7 @@
 <template>
     <label class="flex flex-col gap-1 w-full">
         <span>{{ props.label }}</span>
-        <input :type="props.type || 'text'" class="border p-2 rounded-lg outline-none" v-model="props.value">
+        <input :type="props.type || 'text'" class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500" v-model="props.value">
     </label>
 </template>
 

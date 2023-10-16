@@ -1,6 +1,6 @@
 <template>
     <div class="w-full py-6 gap-4">
-        <course-form :id="id" path="courses"/>
+        <course-form :id="id" path="trainings"/>
     </div>
 </template>
 
