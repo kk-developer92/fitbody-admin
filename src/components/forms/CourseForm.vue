@@ -73,17 +73,18 @@
                         </button>
                     </div>
                     <button type="button"
-                            @click="open"
+                            @click="createWeek"
                             class="w-full mt-4 flex justify-center items-center p-3 border-red-600 border-2 rounded-lg hover:bg-red-50">
                         <span class="text-red-600 text-lg">Добавить неделью</span>
                     </button>
                 </div>
-                 <button class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
-                        Сохранить
-                    </button>
+            </div>
+            <div class="flex justify-end">
+                <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                    Сохранить
+                </button>
             </div>
         </form>
-        <create-week/>
     </div>
 </template>
 
@@ -94,8 +95,6 @@ import axios from "axios";
 import BaseInput from "~/components/BaseInput.vue";
 import ImageUploader from "~/components/ImageUploader.vue";
 import EditIcon from "assets/icons/EditIcon.vue";
-import {useModal} from "~/compasables/useModal";
-import CreateWeek from "~/components/modals/createWeek.vue";
 
 const props = defineProps<{ id: any, path: string }>();
 const course = ref({});
@@ -110,10 +109,14 @@ if (props.id) {
     fetch();
 }
 
-
-function open() {
-    useModal('weekModal').open();
+function createWeek() {
+    course.value?.exercises.push({name: "Week 2"});
 }
+
+async function submit() {
+    await axios.patch(`${url}${props.path}/${props.id}`, course.value);
+}
+
 </script>
 
 <style scoped>
