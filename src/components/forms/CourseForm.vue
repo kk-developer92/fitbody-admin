@@ -9,8 +9,18 @@
                     </label>
                     <div class="flex flex-col gap-4">
                         <div class="grid grid-cols-3 gap-4">
-                            <base-input :value="course.title" label="Название"/>
-                            <base-input :value="course.price" type="number" label="Цена"/>
+                            <label class="flex flex-col gap-1 w-full">
+                                <span>Название</span>
+                                <input type="text"
+                                       class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                       v-model="course.title">
+                            </label>
+                            <label class="flex flex-col gap-1 w-full">
+                                <span>Цена</span>
+                                <input type="number"
+                                       class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                       v-model="course.price">
+                            </label>
                             <div class="w-full">
                                 <span>Пол</span>
                                 <select v-model="course.type" class="w-full border p-2 rounded-lg outline-none mt-1">
@@ -28,17 +38,14 @@
                             <editor v-model="course.description"/>
                         </div>
                     </div>
-                    <!--                <button class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">-->
-                    <!--                    Сохранить-->
-                    <!--                </button>-->
                 </div>
                 <div class="w-2/3">
                     <div v-if="course.exercises?.length"
-                         class="flex flex-col gap-5 border border-gray-400 rounded-lg p-2">
-                        <div v-for="week in course.exercises">
+                         class="flex flex-col gap-5">
+                        <div class="border border-gray-400 p-2 rounded-lg" v-for="(week, idx) in course.exercises">
                             <input type="text" class="text-2xl font-bold border-none" v-model="week.name">
                             <div v-if="week.data?.length" v-for="day in week.data"
-                                 class="p-2 border border-gray-400 rounded-lg mt-2">
+                                 class="p-2 border border-gray-400  rounded-lg mt-2">
                                 <input type="text" class="text-xl font-bold border-none" v-model="day.name">
                                 <div v-for="train in day.trainings"
                                      class="p-2 mt-2 mb-4 border border-gray-400 rounded-lg">
@@ -66,11 +73,12 @@
                                     <span class="text-red-600 text-lg">Добавить блок тренировки</span>
                                 </button>
                             </div>
+                            <button type="button"
+                                    @click="createDay(idx)"
+                                    class="w-full mt-4 flex justify-center items-center p-3 border-red-600 border-2 rounded-lg hover:bg-red-50">
+                                <span class="text-red-600 text-lg">Добавить день</span>
+                            </button>
                         </div>
-                        <button type="button"
-                                class="w-full flex justify-center items-center p-3 border-red-600 border-2 rounded-lg hover:bg-red-50">
-                            <span class="text-red-600 text-lg">Добавить день</span>
-                        </button>
                     </div>
                     <button type="button"
                             @click="createWeek"
@@ -97,7 +105,7 @@ import ImageUploader from "~/components/ImageUploader.vue";
 import EditIcon from "assets/icons/EditIcon.vue";
 
 const props = defineProps<{ id: any, path: string }>();
-const course = ref({});
+const course: any = ref({});
 const url = import.meta.env.VITE_API_URL;
 
 async function fetch() {
@@ -110,10 +118,15 @@ if (props.id) {
 }
 
 function createWeek() {
-    course.value?.exercises.push({name: "Week 2"});
+    course.value?.exercises.push({name: "Week"});
+}
+
+function createDay(idx: any) {
+    course.value?.exercises[idx].data.push({name: "Some day"});
 }
 
 async function submit() {
+    console.log(course.value.price)
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
 }
 
