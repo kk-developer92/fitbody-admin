@@ -157,7 +157,6 @@ function createTrainings(idx: any, index: any, ind: any) {
 }
 
 async function submit() {
-    console.log(course.value.price)
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
 }
 
