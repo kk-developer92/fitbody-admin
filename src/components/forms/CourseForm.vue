@@ -31,11 +31,11 @@
                         </div>
                         <div v-if="course.shortDescription" class="w-full flex flex-col gap-1">
                             <span>Краткое описание</span>
-                            <editor v-model="course.shortDescription"/>
+                            <ckeditor :editor="editor" v-model="course.shortDescription" :config="editorConfig"></ckeditor>
                         </div>
                         <div v-if="course.description" class="w-full flex flex-col gap-1">
                             <span>Описание</span>
-                            <editor v-model="course.description"/>
+                            <ckeditor :editor="editor" v-model="course.description" :config="editorConfig"></ckeditor>
                         </div>
                     </div>
                 </div>
@@ -129,11 +129,16 @@
 import axios from "axios";
 import ImageUploader from "~/components/ImageUploader.vue";
 import CrossIcon from "assets/icons/CrossIcon.vue";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
 const props = defineProps<{ id: any, path: string }>();
 const course: any = ref({});
 const url = import.meta.env.VITE_API_URL;
 
+const editor = ref(ClassicEditor);
+const editorConfig = ref({
+    language: 'ru'
+});
 async function fetch() {
     const {data} = await axios.get(url + `${props.path}/` + props.id);
     course.value = data;
