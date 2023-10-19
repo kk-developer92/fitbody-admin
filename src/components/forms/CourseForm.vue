@@ -43,48 +43,72 @@
                     <div v-if="course.exercises?.length"
                          class="flex flex-col gap-5">
                         <div class="border border-gray-400 p-2 rounded-lg" v-for="(week, idx) in course.exercises">
-                            <input type="text" class="text-2xl font-bold border-none" v-model="week.name">
-                            <div v-if="week.data?.length" v-for="day in week.data"
-                                 class="p-2 border border-gray-400  rounded-lg mt-2">
-                                <input type="text" class="text-xl font-bold border-none" v-model="day.name">
-                                <div v-for="train in day.trainings"
+                            <div class="flex justify-between">
+                                <input type="text" class="text-2xl font-bold border-none" v-model="week.name">
+                                <button type="button"
+                                        class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
+                                    <cross-icon class="cursor-pointer"/>
+                                </button>
+                            </div>
+                            <div v-if="week.data?.length" v-for="(day, index) in week.data"
+                                 class="w-full p-2 border border-gray-400  rounded-lg mt-2">
+                                <div class="flex justify-between">
+                                    <input type="text" class="text-xl font-bold border-none" v-model="day.name">
+                                    <button type="button"
+                                            class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
+                                        <cross-icon class="cursor-pointer"/>
+                                    </button>
+                                </div>
+                                <div v-for="(train, ind) in day.trainings"
                                      class="p-2 mt-2 mb-4 border border-gray-400 rounded-lg">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <span class="text-xl font-bold border-none">Подходы</span>
-                                        <input type="number" class="w-12 text-xl font-bold border-none"
-                                               v-model="train.reps">
+                                    <div class="flex justify-between border-b">
+                                        <div class="flex items-center gap-2 mb-3">
+                                            <span class="text-xl font-bold border-none">Подходы</span>
+                                            <input type="number" class="w-12 text-xl font-bold border-none"
+                                                   v-model="train.reps">
+                                        </div>
+                                        <button type="button"
+                                                class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
+                                            <cross-icon class="cursor-pointer"/>
+                                        </button>
                                     </div>
-                                    <div class="flex flex-col gap-2">
+                                    <div class="flex flex-col gap-2 mt-2">
                                         <div v-for="exercises in train.exercises" class="flex gap-3">
                                             <img class="w-16 rounded-md" :src="exercises.image" alt="">
                                             <div class="flex w-full items-center justify-between">
                                                 <span class="text-lg font-medium">{{ exercises.title }}</span>
-                                                <edit-icon class="cursor-pointer"/>
+                                                <button type="button"
+                                                        class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
+                                                    <cross-icon class="cursor-pointer"/>
+                                                </button>
                                             </div>
                                         </div>
-                                        <button type="button"
-                                                class="w-full flex justify-center items-center p-3 border-red-600 border-2 rounded-lg hover:bg-red-50">
-                                            <span class="text-red-600 text-lg">Добавить тренировку</span>
-                                        </button>
+                                        <div class="w-full flex items-center justify-center">
+                                            <span
+                                                @click="createTrainings(idx, index, ind)"
+                                                class="text-red-600 text-lg select-none cursor-pointer">Добавить тренировку</span>
+                                        </div>
                                     </div>
                                 </div>
-                                <button type="button"
-                                        class="w-full flex justify-center items-center p-3 border-red-600 border-2 rounded-lg hover:bg-red-50">
-                                    <span class="text-red-600 text-lg">Добавить блок тренировки</span>
-                                </button>
+                                <div class="w-full flex items-center justify-center">
+                                    <span
+                                        @click="createTrainingBlock(idx, index)"
+                                        class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить блок тренировки</span>
+                                </div>
                             </div>
-                            <button type="button"
+                            <div class="w-full flex mt-3 items-center justify-center">
+                                <span
                                     @click="createDay(idx)"
-                                    class="w-full mt-4 flex justify-center items-center p-3 border-red-600 border-2 rounded-lg hover:bg-red-50">
-                                <span class="text-red-600 text-lg">Добавить день</span>
-                            </button>
+                                    class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить день</span>
+                            </div>
                         </div>
                     </div>
-                    <button type="button"
-                            @click="createWeek"
-                            class="w-full mt-4 flex justify-center items-center p-3 border-red-600 border-2 rounded-lg hover:bg-red-50">
-                        <span class="text-red-600 text-lg">Добавить неделью</span>
-                    </button>
+                    <div
+                        @click="createWeek"
+                        class="w-full flex mt-3 items-center justify-center">
+                        <span
+                            class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить неделью</span>
+                    </div>
                 </div>
             </div>
             <div class="flex justify-end">
@@ -100,9 +124,8 @@
 
 
 import axios from "axios";
-import BaseInput from "~/components/BaseInput.vue";
 import ImageUploader from "~/components/ImageUploader.vue";
-import EditIcon from "assets/icons/EditIcon.vue";
+import CrossIcon from "assets/icons/CrossIcon.vue";
 
 const props = defineProps<{ id: any, path: string }>();
 const course: any = ref({});
@@ -123,6 +146,14 @@ function createWeek() {
 
 function createDay(idx: any) {
     course.value?.exercises[idx].data.push({name: "Some day"});
+}
+
+function createTrainingBlock(idx: any, index: any) {
+    course.value?.exercises[idx].data[index].trainings.push({reps: 1, exercises: []});
+}
+
+function createTrainings(idx: any, index: any, ind: any) {
+    console.log(course.value?.exercises[idx].data[index].trainings[ind].exercises);
 }
 
 async function submit() {
