@@ -48,7 +48,9 @@
                                 <input type="text" class="text-2xl font-bold border-none" v-model="week.name">
                                 <button type="button"
                                         class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
-                                    <cross-icon @click="weekAction('delete', idx)" class="cursor-pointer"/>
+                                    <cross-icon
+                                        @click="deleteBlock(course.exercises, idx)"
+                                    />
                                 </button>
                             </div>
                             <div v-if="week.data?.length" v-for="(day, index) in week.data"
@@ -57,7 +59,9 @@
                                     <input type="text" class="text-xl font-bold border-none" v-model="day.name">
                                     <button type="button"
                                             class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
-                                        <cross-icon @click="dayAction('delete', idx, index)" class="cursor-pointer"/>
+                                        <cross-icon
+                                            @click="deleteBlock(week.data, index)"
+                                            class="cursor-pointer"/>
                                     </button>
                                 </div>
                                 <div v-for="(train, ind) in day.trainings"
@@ -70,8 +74,9 @@
                                         </div>
                                         <button type="button"
                                                 class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
-                                            <cross-icon @click="trainingBlockAction(idx, index, 'delete', ind)"
-                                                        class="cursor-pointer"/>
+                                            <cross-icon
+                                                @click="deleteBlock(day.trainings, ind)"
+                                                class="cursor-pointer"/>
                                         </button>
                                     </div>
                                     <div class="flex flex-col gap-2 mt-2">
@@ -82,33 +87,33 @@
                                                 <button type="button"
                                                         class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
                                                     <cross-icon
-                                                        @click="trainingsActions(idx, index, ind, 'delete', delIdx)"
+                                                        @click="deleteBlock(train.exercises, delIdx)"
                                                         class="cursor-pointer"/>
                                                 </button>
                                             </div>
                                         </div>
                                         <div class="w-full flex items-center justify-center">
                                             <span
-                                                @click="trainingsActions(idx, index, ind, 'create')"
+                                                @click="addTraining(train.exercises)"
                                                 class="text-red-600 text-lg select-none cursor-pointer">Добавить тренировку</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="w-full flex items-center justify-center">
                                     <span
-                                        @click="trainingBlockAction(idx, index, 'create')"
+                                        @click="addBlock(day.trainings, {reps: 1, exercises: []})"
                                         class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить блок тренировки</span>
                                 </div>
                             </div>
                             <div class="w-full flex mt-3 items-center justify-center">
                                 <span
-                                    @click="dayAction('create', idx)"
+                                    @click="addBlock(week.data, {name: 'Some day', trainings: []})"
                                     class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить день</span>
                             </div>
                         </div>
                     </div>
                     <div
-                        @click="weekAction('create')"
+                        @click="addBlock(course.exercises, {name: 'Week', data:[]})"
                         class="w-full flex mt-10 items-center justify-center">
                         <span
                             class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить неделью</span>
@@ -121,7 +126,7 @@
                 </button>
             </div>
         </form>
-        <add-exercises @close="close" @add="add"/>
+        <add-exercises @close="close"/>
     </div>
 </template>
 
@@ -155,58 +160,25 @@ if (props.id) {
     fetch();
 }
 
+function addBlock(data: any, obj: any) {
+    data.push(obj);
+}
+
+function deleteBlock(data: any, index: any) {
+    data.splice(index, 1);
+}
+
+function addTraining(data: any) {
+    modal.open(data);
+}
+
 function close() {
     modal.close();
 }
 
-function weekAction(method: string, idx?: any) {
-    if (method === 'create') {
-        course.value?.exercises.push({name: "Week"});
-    } else {
-        course.value?.exercises.splice(idx, 1);
-    }
-}
-
-function dayAction(method: string, idx: any, index?: any) {
-    if (method === 'create') {
-        course.value?.exercises[idx].data.push({name: "Some day"});
-    } else {
-        course.value?.exercises[idx].data.splice(index, 1);
-    }
-}
-
-function trainingBlockAction(idx: any, index: any, method: string, idxDel?: any) {
-    if (method === 'create') {
-        course.value?.exercises[idx].data[index].trainings.push({reps: 1, exercises: []});
-    } else {
-        course.value?.exercises[idx].data[index].trainings.splice(idxDel, 1);
-    }
-}
-
-let idx2 = 0;
-let index2 = 0;
-let ind2 = 0;
-
-function trainingsActions(idx: any, index: any, ind: any, method: string, idxDel?: any) {
-    if (method === 'create') {
-        modal.open(course.value?.exercises[idx].data[index].trainings[ind].exercises);
-        idx2 = idx;
-        index2 = index;
-        ind2 = ind;
-    } else {
-        course.value?.exercises[idx].data[index].trainings[ind].exercises.splice(idxDel, 1);
-    }
-}
-
-
 async function submit() {
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
 }
-
-function add(data: any) {
-    course.value?.exercises[idx2].data[index2].trainings[ind2].exercises.replace(...data);
-}
-
 
 </script>
 

@@ -7,7 +7,8 @@
                 </div>
                 <div class="flex flex-col gap-5 p-4">
                     <div class="flex items-center" v-for="train in exercises">
-                        <input type="checkbox" :checked="train.checked" class="w-4 h-4" @click="add($event, train)">
+                        <input type="checkbox" class="w-4 h-4"
+                               @click="!$event.target.checked ? deleteResult(train) : addToResult(train)">
                         <div class="flex items-center ml-5 gap-2">
                             <img :src="train.image" class="w-10 h-10 rounded-md" alt="">
                             <p class="font-semibold text-lg">{{ train.title }}</p>
@@ -30,35 +31,29 @@ import CrossIcon from "assets/icons/CrossIcon.vue";
 import axios from "axios";
 
 
-const emit = defineEmits(['close', 'add'])
+const emit = defineEmits(['close'])
 const url = import.meta.env.VITE_API_URL;
-const exercises = ref([]);
-const result: any = ref([]);
+const exercises: any = ref([]);
+let result: any = ref([]);
 
 function shown(data: any) {
+    fetch();
     result.value = data;
 }
 
 async function fetch() {
     const {data} = await axios.get(`${url}exercises`);
+
     exercises.value = data.data;
 }
 
 
-fetch();
+function addToResult(data: any) {
+    result.value.push(data);
+}
 
-function add(e: any, data: any) {
-    data.checked = e.target.checked;
-    if (data.checked) {
-        result.value.push(data);
-    } else {
-        result.value.map((i: { _id: any; }, idx: number) => {
-            if (data._id === i._id) {
-                result.value.splice(idx, 1);
-            }
-        });
-    }
-    emit('add', result.value);
+function deleteResult(data: any) {
+    result.value.splice(result.value.indexOf(data), 1);
 }
 
 function submit() {
