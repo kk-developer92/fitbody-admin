@@ -1,5 +1,12 @@
 <template>
     <div>
+        <div class="flex justify-end">
+            <nuxt-link href="/courses/create">
+                <button class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                    Добавить
+                </button>
+            </nuxt-link>
+        </div>
         <div v-if="courses.length" class="w-full grid grid-cols-3 py-6 gap-4">
             <train-block :courses="courses" path="courses"/>
         </div>

@@ -5,7 +5,9 @@
                 <div class="w-1/3 flex flex-col gap-4">
                     <label class="w-full">
                         <image-uploader :image="course.image"/>
-                        <input type="file" class="hidden">
+                        <input type="file"
+                               @change="getFile"
+                               class="hidden">
                     </label>
                     <div class="flex flex-col gap-4">
                         <div class="grid grid-cols-3 gap-4">
@@ -34,7 +36,7 @@
                             <ckeditor :editor="editor" v-model="course.shortDescription"
                                       :config="editorConfig"></ckeditor>
                         </div>
-                        <div v-if="course.description" class="w-full flex flex-col gap-1">
+                        <div class="w-full flex flex-col gap-1">
                             <span>Описание</span>
                             <ckeditor :editor="editor" v-model="course.description" :config="editorConfig"></ckeditor>
                         </div>
@@ -83,7 +85,7 @@
                                         <div v-for="(exercises, delIdx) in train.exercises" class="flex gap-3">
                                             <img class="w-16 rounded-md" :src="exercises.image" alt="">
                                             <div class="flex w-full items-center justify-between">
-                                                <span class="text-lg font-medium">{{ exercises.title }}</span>
+                                                <span class="text-lg font-medium">{{ exercises.name }}</span>
                                                 <button type="button"
                                                         class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
                                                     <cross-icon
@@ -143,7 +145,7 @@ import AddExercises from "~/components/modals/AddExercises.vue";
 const props = defineProps<{ id: any, path: string }>();
 const course: any = ref({});
 const url = import.meta.env.VITE_API_URL;
-
+const formData = new FormData();
 
 const editor = ref(ClassicEditor);
 const editorConfig = ref({
@@ -156,7 +158,7 @@ async function fetch() {
     course.value = data;
 }
 
-if (props.id) {
+if (props.id !== 'created') {
     fetch();
 }
 
@@ -177,7 +179,20 @@ function close() {
 }
 
 async function submit() {
+    if (props.id === 'create') {
+        await axios.patch(`${url}${props.path}/`, course.value);
+        return;
+    }
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
+}
+
+async function getFile(e: any) {
+    formData.append('image', e.currentTarget.files[0]);
+    await axios.patch(`${url}${props.path}/${props.id}`, formData);
+
+    setTimeout(async () => {
+        await fetch();
+    }, 200);
 }
 
 </script>

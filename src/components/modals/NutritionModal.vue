@@ -6,7 +6,8 @@
                     <cross-icon @click="useModal('nutritionModal').close()" class="cursor-pointer"/>
                 </div>
                 <div class="p-4">
-                    <div v-if="showMsg" class="border border-red-600 bg-red-100 w-full rounded-lg flex items-center justify-between p-5">
+                    <div v-if="showMsg"
+                         class="border border-red-600 bg-red-100 w-full rounded-lg flex items-center justify-between p-5">
                         <p>{{ errorMsg }}</p>
                         <cross-icon @click="showMsg=false" class="cursor-pointer text-red-600"/>
                     </div>
@@ -14,7 +15,9 @@
                 <div class="p-4">
                     <label class="w-full">
                         <image-uploader class="w-full h-96" :image="currentItem.image"/>
-                        <input type="file" class="hidden">
+                        <input type="file"
+                               @change="emit('getFile', $event, currentItem)"
+                               class="hidden">
                     </label>
                     <div class="flex flex-col gap-4">
                         <div class="grid grid-cols-3 gap-4">
@@ -72,6 +75,7 @@ const editorConfig = ref({
 });
 const errorMsg = ref('');
 const showMsg = ref(false);
+const emit = defineEmits(['getFile']);
 
 function shown(data: any) {
     currentItem.value = data;
@@ -86,6 +90,7 @@ function submit() {
         errorMsg.value = 'Что-то пошло не так!'
     }
 }
+
 </script>
 
 <style scoped>
