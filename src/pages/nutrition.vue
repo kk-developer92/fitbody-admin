@@ -1,11 +1,9 @@
 <template>
     <div>
         <div class="flex justify-end">
-            <nuxt-link href="/nutrition/create">
-                <button class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
-                    Добавить
-                </button>
-            </nuxt-link>
+            <button @click="useModal('nutritionModal').open()" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                Добавить
+            </button>
         </div>
         <div v-if="nutrition.length" class="w-full grid grid-cols-3 py-6 gap-4">
             <div class="cursor-pointer rounded-xl relative" v-for="nut in nutrition" @click="openModal(nut)">
@@ -23,7 +21,7 @@
         <div v-else class="w-full flex items-center justify-center py-12">
             <loader class="!text-gray-300"/>
         </div>
-        <nutrition-modal id="nutritionModal" @getFile="getFile"/>
+        <nutrition-modal id="nutritionModal" />
     </div>
 </template>
 
@@ -37,7 +35,6 @@ import NutritionModal from "~/components/modals/NutritionModal.vue";
 const url = import.meta.env.VITE_API_URL;
 const nutrition = ref([]);
 const modal = useModal('nutritionModal');
-const formData = new FormData();
 
 async function fetch() {
     const {data} = await axios.get(url + 'nutrition');
@@ -50,10 +47,6 @@ function openModal(data: any) {
     modal.open(data);
 }
 
-async function getFile(e: any, currentItem: any) {
-    formData.append('image', e.currentTarget.files[0]);
-    await axios.patch(`${url}nutrition/${currentItem._id}`, formData);
-}
 </script>
 
 <style scoped>

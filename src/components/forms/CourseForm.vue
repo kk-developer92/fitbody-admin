@@ -30,10 +30,23 @@
                                     <option value="women">Женский</option>
                                 </select>
                             </div>
+                            <div class="w-full">
+                                <span>Сложность</span>
+                                <select v-model="course.complexity"
+                                        class="w-full border p-2 rounded-lg outline-none mt-1">
+                                    <option value="beginner">Начинаюший</option>
+                                    <option value="advanced">Продвинутый</option>
+                                </select>
+                            </div>
                         </div>
-                        <div v-if="course.shortDescription" class="w-full flex flex-col gap-1">
+                        <div v-if="props.path === 'courses'" class="w-full flex flex-col gap-1">
                             <span>Краткое описание</span>
                             <ckeditor :editor="editor" v-model="course.shortDescription"
+                                      :config="editorConfig"></ckeditor>
+                        </div>
+                        <div class="w-full flex flex-col gap-1">
+                            <span>О программе</span>
+                            <ckeditor :editor="editor" v-model="course.about_program"
                                       :config="editorConfig"></ckeditor>
                         </div>
                         <div class="w-full flex flex-col gap-1">
@@ -122,7 +135,11 @@
                     </div>
                 </div>
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-between">
+                <button v-if="course._id" @click="deleteCourse" type="button"
+                        class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                    Удалить
+                </button>
                 <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                     Сохранить
                 </button>
@@ -158,7 +175,7 @@ async function fetch() {
     course.value = data;
 }
 
-if (props.id !== 'created') {
+if (props.id !== 'create') {
     fetch();
 }
 
@@ -180,7 +197,9 @@ function close() {
 
 async function submit() {
     if (props.id === 'create') {
-        await axios.patch(`${url}${props.path}/`, course.value);
+        const data = await axios.post(`${url}${props.path}/`, course.value);
+        await axios.patch(`${url}${props.path}/${data.data._id}`, formData);
+        window.location.href = `http://localhost:3000/${props.path}`;
         return;
     }
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
@@ -188,11 +207,15 @@ async function submit() {
 
 async function getFile(e: any) {
     formData.append('image', e.currentTarget.files[0]);
-    await axios.patch(`${url}${props.path}/${props.id}`, formData);
 
-    setTimeout(async () => {
-        await fetch();
-    }, 200);
+    if (props.id !== 'create') {
+        await axios.patch(`${url}${props.path}/${props.id}`, formData);
+    }
+}
+
+async function deleteCourse() {
+    await axios.delete(`${url}${props.path}/${course.value._id}`);
+    window.location.href = `http://localhost:3000/${props.path}`;
 }
 
 </script>

@@ -16,7 +16,7 @@
                     <label class="w-full">
                         <image-uploader class="w-full h-96" :image="currentItem.image"/>
                         <input type="file"
-                               @change="emit('getFile', $event, currentItem)"
+                               @change="getFile"
                                class="hidden">
                     </label>
                     <div class="flex flex-col gap-4">
@@ -42,14 +42,18 @@
                                 </select>
                             </div>
                         </div>
-                        <div v-if="currentItem.description" class="w-full flex flex-col gap-1">
+                        <div class="w-full flex flex-col gap-1">
                             <span>Описание</span>
                             <ckeditor :editor="editor" v-model="currentItem.description"
                                       :config="editorConfig"></ckeditor>
                         </div>
                     </div>
                 </div>
-                <div class="flex justify-end p-4">
+                <div class="flex justify-between p-4">
+                    <button v-if="currentItem._id" @click.prevent="deleteNutrition"
+                            class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                        Удалить
+                    </button>
                     <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                         Сохранить
                     </button>
@@ -75,22 +79,48 @@ const editorConfig = ref({
 });
 const errorMsg = ref('');
 const showMsg = ref(false);
-const emit = defineEmits(['getFile']);
+const formData = new FormData();
 
 function shown(data: any) {
     currentItem.value = data;
 }
 
+
 function submit() {
+    formData.append('about_program', currentItem.value.about_program);
+    formData.append('description', currentItem.value.description);
+    formData.append('price', currentItem.value.price);
+    formData.append('title', currentItem.value.title);
+    formData.append('type', currentItem.value.type);
+
     try {
-        axios.patch(`${url}nutrition/${currentItem.value._id}`, currentItem.value);
-        useModal('nutritionModal').close();
+        if (currentItem.value._id) {
+            axios.patch(`${url}nutrition/${currentItem.value._id}`, currentItem.value);
+            useModal('nutritionModal').close();
+        } else {
+            axios.post(`${url}nutrition`, formData);
+            useModal('nutritionModal').close();
+        }
     } catch (e) {
         showMsg.value = true;
         errorMsg.value = 'Что-то пошло не так!'
     }
 }
 
+async function getFile(e: any) {
+    formData.append('image', e.currentTarget.files[0]);
+    console.log(formData.get('image'));
+    if (currentItem.value._id) {
+        await axios.patch(`${url}nutrition/${currentItem.value._id}`, formData);
+    }
+}
+
+
+async function deleteNutrition() {
+    await axios.delete(`${url}nutrition/${currentItem.value._id}`);
+    useModal('nutritionModal').close();
+    window.location.reload();
+}
 </script>
 
 <style scoped>
