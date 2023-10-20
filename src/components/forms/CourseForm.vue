@@ -31,7 +31,8 @@
                         </div>
                         <div v-if="course.shortDescription" class="w-full flex flex-col gap-1">
                             <span>Краткое описание</span>
-                            <ckeditor :editor="editor" v-model="course.shortDescription" :config="editorConfig"></ckeditor>
+                            <ckeditor :editor="editor" v-model="course.shortDescription"
+                                      :config="editorConfig"></ckeditor>
                         </div>
                         <div v-if="course.description" class="w-full flex flex-col gap-1">
                             <span>Описание</span>
@@ -120,6 +121,7 @@
                 </button>
             </div>
         </form>
+        <add-exercises @close="close" @add="add"/>
     </div>
 </template>
 
@@ -130,15 +132,20 @@ import axios from "axios";
 import ImageUploader from "~/components/ImageUploader.vue";
 import CrossIcon from "assets/icons/CrossIcon.vue";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import {useModal} from '~/compasables/useModal';
+import AddExercises from "~/components/modals/AddExercises.vue";
 
 const props = defineProps<{ id: any, path: string }>();
 const course: any = ref({});
 const url = import.meta.env.VITE_API_URL;
 
+
 const editor = ref(ClassicEditor);
 const editorConfig = ref({
     language: 'ru'
 });
+const modal = useModal('addModal');
+
 async function fetch() {
     const {data} = await axios.get(url + `${props.path}/` + props.id);
     course.value = data;
@@ -146,6 +153,10 @@ async function fetch() {
 
 if (props.id) {
     fetch();
+}
+
+function close() {
+    modal.close();
 }
 
 function weekAction(method: string, idx?: any) {
@@ -172,17 +183,30 @@ function trainingBlockAction(idx: any, index: any, method: string, idxDel?: any)
     }
 }
 
+let idx2 = 0;
+let index2 = 0;
+let ind2 = 0;
+
 function trainingsActions(idx: any, index: any, ind: any, method: string, idxDel?: any) {
     if (method === 'create') {
-        console.log(course.value?.exercises[idx].data[index].trainings[ind].exercises);
+        modal.open(course.value?.exercises[idx].data[index].trainings[ind].exercises);
+        idx2 = idx;
+        index2 = index;
+        ind2 = ind;
     } else {
         course.value?.exercises[idx].data[index].trainings[ind].exercises.splice(idxDel, 1);
     }
 }
 
+
 async function submit() {
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
 }
+
+function add(data: any) {
+    course.value?.exercises[idx2].data[index2].trainings[ind2].exercises.replace(...data);
+}
+
 
 </script>
 
