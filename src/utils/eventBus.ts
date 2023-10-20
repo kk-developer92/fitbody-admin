@@ -31,6 +31,7 @@ export class EventBus {
                 if (listener.once) {
                     this.off(listener.event, listener.callback);
                 }
+                
             }
         })
     }
