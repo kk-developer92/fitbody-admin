@@ -20,6 +20,10 @@
 import axios from "axios";
 import Loader from "~/components/Loader.vue";
 import TrainBlock from "~/components/TrainBlock.vue";
+definePageMeta({
+	authRoute: true,
+	middleware: 'auth'
+});
 
 const url = import.meta.env.VITE_API_URL;
 const courses = ref([]);

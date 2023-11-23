@@ -31,6 +31,10 @@ import axios from "axios";
 import Loader from "~/components/Loader.vue";
 import {useModal} from "~/compasables/useModal";
 import NutritionModal from "~/components/modals/NutritionModal.vue";
+definePageMeta({
+	authRoute: true,
+	middleware: 'auth'
+});
 
 const url = import.meta.env.VITE_API_URL;
 const nutrition = ref([]);

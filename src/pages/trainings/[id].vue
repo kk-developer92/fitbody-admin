@@ -5,6 +5,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+	authRoute: true,
+	middleware: 'auth'
+});
 
 import CourseForm from "~/components/forms/CourseForm.vue";
 

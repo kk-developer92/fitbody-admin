@@ -27,6 +27,10 @@
 </template>
 
 <script setup lang="ts">
+definePageMeta({
+	authRoute: true,
+	middleware: 'auth'
+});
 
 import axios from "axios";
 import Loader from "~/components/Loader.vue";
