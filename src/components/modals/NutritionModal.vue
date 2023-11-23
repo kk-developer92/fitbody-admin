@@ -109,7 +109,6 @@ function submit() {
 
 async function getFile(e: any) {
     formData.append('image', e.currentTarget.files[0]);
-    console.log(formData.get('image'));
     if (currentItem.value._id) {
         await axios.patch(`${url}nutrition/${currentItem.value._id}`, formData);
     }
