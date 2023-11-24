@@ -5,7 +5,7 @@
                 Добавить
             </button>
         </div>
-        <div v-if="nutrition.length" class="w-full grid grid-cols-3 py-6 gap-4">
+        <div v-if="nutrition.length" class="w-full grid md:grid-cols-2 lg:grid-cols-3 py-6 gap-4">
             <div class="cursor-pointer rounded-xl relative" v-for="nut in nutrition" @click="openModal(nut)">
                 <img :src="nut.image" class="rounded-xl w-full h-72 object-cover" alt="">
                 <div class="absolute bottom-4 left-4 font-medium">

@@ -1,6 +1,6 @@
 <template>
     <div class="w-full h-screen flex items-center justify-center">
-        <form class="p-4 border rounded-md w-1/3" @submit.prevent="login">
+        <form class="p-4 border rounded-md w-[95%] sm:w-2/3 md:w-1/3" @submit.prevent="login">
             <h1 class="text-4xl font-medium text-red-500">Войти</h1>
             <div class="w-full text-red-500 p-2 py-4 bg-red-200 border border-red-500 rounded-md mt-4" v-if="error.length">
                 {{ error }}

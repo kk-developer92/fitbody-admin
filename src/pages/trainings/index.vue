@@ -7,7 +7,7 @@
                 </button>
             </nuxt-link>
         </div>
-        <div v-if="courses.length" class="w-full grid grid-cols-3 py-6 gap-4">
+        <div v-if="courses.length" class="w-full grid md:grid-cols-2 lg:grid-cols-3 py-6 gap-4">
             <train-block :courses="courses" path="trainings"/>
         </div>
         <div v-else class="w-full flex items-center justify-center py-12">
