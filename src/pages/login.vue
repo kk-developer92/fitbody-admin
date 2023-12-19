@@ -45,7 +45,7 @@ async function login() {
         return error.value = 'Заполните все поля';
     }
 
-    const response = await axios.post('https://lionfish-app-b7cmd.ondigitalocean.app/authorization', {
+    const response = await axios.post('https://joyful-meringue-65adbd.netlify.app/authorization', {
         role: 'admin',
         ...user.value
     });
