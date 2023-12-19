@@ -1,5 +1,6 @@
 <template>
-    <nuxt-link class="rounded-xl relative" v-for="course in props.courses" :href="`${props.path}/` + course?._id">
+    <nuxt-link class="rounded-xl relative shadow" v-for="course in props.courses"
+               :href="`${props.path}/` + course?._id">
         <img :src="course.image" class="rounded-xl w-full h-72 object-cover" alt="">
         <div class="absolute bottom-4 left-4 font-medium">
             <span class="text-white text-xl">{{ course.title }}</span>
@@ -17,5 +18,9 @@ const props = defineProps<{ courses: any, path: string }>()
 </script>
 
 <style scoped>
-
+.shadow {
+    -webkit-box-shadow: 0px -19px 26px 22px rgba(34, 60, 80, 0.2) inset;
+    -moz-box-shadow: 0px -19px 26px 22px rgba(34, 60, 80, 0.2) inset;
+    box-shadow: 0px -19px 26px 22px rgba(34, 60, 80, 0.2) inset;
+}
 </style>

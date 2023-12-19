@@ -1,8 +1,9 @@
 <template>
     <div>
-        <div class="flex justify-end">
+        <div class="flex justify-between items-center mt-5">
+            <search-by-regex @search="searchIt"/>
             <nuxt-link href="/trainings/create">
-                <button class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                <button class="p-2 px-6 bg-red-600 rounded-lg text-white">
                     Добавить
                 </button>
             </nuxt-link>
@@ -20,9 +21,10 @@
 import axios from "axios";
 import Loader from "~/components/Loader.vue";
 import TrainBlock from "~/components/TrainBlock.vue";
+
 definePageMeta({
-	authRoute: true,
-	middleware: 'auth'
+    authRoute: true,
+    middleware: 'auth'
 });
 
 const url = import.meta.env.VITE_API_URL;
@@ -32,6 +34,17 @@ const courses = ref([]);
 async function fetch() {
     const {data} = await axios.get(url + 'trainings');
     courses.value = data.data;
+}
+
+function searchIt(str: string) {
+    fetch();
+    setTimeout(() => {
+        if (str === 'men' || str === 'women') {
+            courses.value = courses.value.filter((el: any) => el.type === str)
+        } else {
+            courses.value = courses.value.filter((el: any) => el.title.toLowerCase().includes(str.toLowerCase()))
+        }
+    }, 700)
 }
 
 fetch();

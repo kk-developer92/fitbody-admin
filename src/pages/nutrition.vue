@@ -1,6 +1,7 @@
 <template>
     <div>
-        <div class="flex justify-end">
+        <div class="flex justify-between items-center mt-5">
+            <search-by-regex @search="searchIt"/>
             <button @click="useModal('nutritionModal').open()" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                 Добавить
             </button>
@@ -21,7 +22,7 @@
         <div v-else class="w-full flex items-center justify-center py-12">
             <loader class="!text-gray-300"/>
         </div>
-        <nutrition-modal id="nutritionModal" />
+        <nutrition-modal id="nutritionModal"/>
     </div>
 </template>
 
@@ -31,9 +32,10 @@ import axios from "axios";
 import Loader from "~/components/Loader.vue";
 import {useModal} from "~/compasables/useModal";
 import NutritionModal from "~/components/modals/NutritionModal.vue";
+
 definePageMeta({
-	authRoute: true,
-	middleware: 'auth'
+    authRoute: true,
+    middleware: 'auth'
 });
 
 const url = import.meta.env.VITE_API_URL;
@@ -46,6 +48,17 @@ async function fetch() {
 }
 
 fetch();
+
+function searchIt(str: string) {
+    fetch();
+    setTimeout(() => {
+        if (str === 'men' || str === 'women') {
+            nutrition.value = nutrition.value.filter((el: any) => el.type === str)
+        } else {
+            nutrition.value = nutrition.value.filter((el: any) => el.title.toLowerCase().includes(str.toLowerCase()))
+        }
+    }, 700)
+}
 
 function openModal(data: any) {
     modal.open(data);
