@@ -1,4 +1,5 @@
 <template>
+    <loading class="absolute w-full h-screen top-0 left-0" v-if="isLoading"/>
     <modal id="nutritionModal" @shown="shown">
         <div class="w-full h-screen flex items-center justify-center">
             <form class="bg-white w-1/2 h-[700px] rounded-lg overflow-y-scroll overflow-x-hidden">
@@ -77,6 +78,7 @@ const editor = ref(ClassicEditor);
 const editorConfig = ref({
     language: 'ru'
 });
+const isLoading = ref(false);
 const errorMsg = ref('');
 const showMsg = ref(false);
 const formData = new FormData();
@@ -87,6 +89,7 @@ function shown(data: any) {
 
 
 function submit() {
+    isLoading.value = true;
     formData.append('about_program', currentItem.value.about_program);
     formData.append('description', currentItem.value.description);
     formData.append('price', currentItem.value.price);
@@ -105,20 +108,27 @@ function submit() {
         showMsg.value = true;
         errorMsg.value = 'Что-то пошло не так!'
     }
+    isLoading.value = false;
 }
 
 async function getFile(e: any) {
+    isLoading.value = true;
     formData.append('image', e.currentTarget.files[0]);
     if (currentItem.value._id) {
         await axios.patch(`${url}nutrition/${currentItem.value._id}`, formData);
     }
+    useModal('nutritionModal').close();
+    isLoading.value = false;
+    window.location.reload();
 }
 
 
 async function deleteNutrition() {
+    isLoading.value = true;
     await axios.delete(`${url}nutrition/${currentItem.value._id}`);
     useModal('nutritionModal').close();
     window.location.reload();
+    isLoading.value = true;
 }
 </script>
 

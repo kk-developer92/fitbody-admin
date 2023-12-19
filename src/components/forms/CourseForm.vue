@@ -1,4 +1,5 @@
 <template>
+    <loading class="absolute w-full h-screen top-0 left-0" v-if="isLoading"/>
     <div>
         <form>
             <div class="w-full flex gap-5">
@@ -169,10 +170,13 @@ const editorConfig = ref({
     language: 'ru'
 });
 const modal = useModal('addModal');
+const isLoading = ref(false);
 
 async function fetch() {
+    isLoading.value = true;
     const {data} = await axios.get(url + `${props.path}/` + props.id);
     course.value = data;
+    isLoading.value = false;
 }
 
 if (props.id !== 'create') {
@@ -196,26 +200,34 @@ function close() {
 }
 
 async function submit() {
+    isLoading.value = true;
     if (props.id === 'create') {
         const data = await axios.post(`${url}${props.path}/`, course.value);
         await axios.patch(`${url}${props.path}/${data.data._id}`, formData);
         window.location.href = `http://localhost:3000/${props.path}`;
+        isLoading.value = false;
         return;
     }
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
+    isLoading.value = false;
+    useRouter().back();
 }
 
 async function getFile(e: any) {
+    isLoading.value = true;
     formData.append('image', e.currentTarget.files[0]);
 
     if (props.id !== 'create') {
         await axios.patch(`${url}${props.path}/${props.id}`, formData);
     }
+    await fetch();
 }
 
 async function deleteCourse() {
+    isLoading.value = true;
     await axios.delete(`${url}${props.path}/${course.value._id}`);
     window.location.href = `http://localhost:3000/${props.path}`;
+    isLoading.value = false;
 }
 
 </script>
