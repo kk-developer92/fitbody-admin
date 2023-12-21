@@ -38,15 +38,14 @@ async function fetch() {
 }
 
 
-function searchIt(str: string) {
-    fetch();
-    setTimeout(() => {
-        if (str === 'men' || str === 'women') {
-            courses.value = courses.value.filter((el: any) => el.type === str)
-        } else {
-            courses.value = courses.value.filter((el: any) => el.title.toLowerCase().includes(str.toLowerCase()))
-        }
-    }, 700)
+async function searchIt(str: string) {
+    await fetch();
+
+    if (str === 'men' || str === 'women') {
+        courses.value = courses.value.filter((el: any) => el.type === str)
+    } else {
+        courses.value = courses.value.filter((el: any) => el.title.toLowerCase().includes(str.toLowerCase()))
+    }
 }
 
 fetch();
