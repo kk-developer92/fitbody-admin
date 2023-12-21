@@ -1,4 +1,5 @@
 <template>
+    <loading class="absolute w-full h-screen top-0 left-0" v-if="isLoading"/>
     <modal id="exercisesModal" @shown="shown">
         <div class="w-full h-screen flex items-center justify-center">
             <form class="bg-white w-1/2 rounded-lg">
@@ -40,7 +41,10 @@
                         </label>
                     </div>
                 </div>
-                <div class="flex justify-end p-4">
+                <div class="flex justify-between p-4 gap-2">
+                    <button v-if="currentItem?._id" @click.prevent="deleteIt" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                        Удалить
+                    </button>
                     <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                         Сохранить
                     </button>
@@ -62,30 +66,50 @@ const errorMsg = ref('');
 const showMsg = ref(false);
 const url = import.meta.env.VITE_API_URL;
 const formData = new FormData();
+const isLoading = ref(false);
 
 function shown(data: any) {
     currentItem.value = data;
 }
 
 async function submit() {
-    formData.append('name', currentItem.value.name);
-    formData.append('title', currentItem.value.title);
-    formData.append('video', currentItem.value.video);
-    if (!currentItem.value._id) {
-        await axios.post(`${url}exercises`, formData);
-    }
-
+    isLoading.value = true;
     try {
-        axios.patch(`${url}exercises/${currentItem.value._id}`, formData);
-        useModal('exercisesModal').close();
+        await axios.patch(`${url}exercises/${currentItem.value._id}`, currentItem.value);
+        window.location.reload();
     } catch (e) {
         showMsg.value = true;
         errorMsg.value = 'Что-то пошло не так!'
     }
+    isLoading.value = false;
 }
 
-function getFile(e: any) {
+async function getFile(e: any) {
+    isLoading.value = true;
     formData.append('image', e.currentTarget.files[0]);
+
+    if (currentItem.value?._id) {
+        await axios.patch(`${url}exercises/${currentItem.value._id}`, formData)
+        const data = await axios.get(`${url}exercises/${currentItem.value._id}`)
+
+        currentItem.value.image = data.data.image;
+        isLoading.value = false;
+        return;
+    }
+
+    const exercise = await axios.post(`${url}exercises`, formData);
+
+    currentItem.value._id = exercise.data._id;
+    currentItem.value.image = exercise.data.image;
+
+    isLoading.value = false;
+}
+
+async function deleteIt() {
+    isLoading.value = true;
+    await axios.delete(`${url}exercises/${currentItem.value._id}`);
+    window.location.reload();
+    isLoading.value = false;
 }
 
 </script>

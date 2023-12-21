@@ -88,22 +88,11 @@ function shown(data: any) {
 }
 
 
-function submit() {
+async function submit() {
     isLoading.value = true;
-    formData.append('about_program', currentItem.value.about_program);
-    formData.append('description', currentItem.value.description);
-    formData.append('price', currentItem.value.price);
-    formData.append('title', currentItem.value.title);
-    formData.append('type', currentItem.value.type);
-
     try {
-        if (currentItem.value._id) {
-            axios.patch(`${url}nutrition/${currentItem.value._id}`, currentItem.value);
-            useModal('nutritionModal').close();
-        } else {
-            axios.post(`${url}nutrition`, formData);
-            useModal('nutritionModal').close();
-        }
+        await axios.patch(`${url}nutrition/${currentItem.value._id}`, currentItem.value);
+        window.location.reload();
     } catch (e) {
         showMsg.value = true;
         errorMsg.value = 'Что-то пошло не так!'
@@ -111,15 +100,26 @@ function submit() {
     isLoading.value = false;
 }
 
+
 async function getFile(e: any) {
     isLoading.value = true;
     formData.append('image', e.currentTarget.files[0]);
-    if (currentItem.value._id) {
-        await axios.patch(`${url}nutrition/${currentItem.value._id}`, formData);
+
+    if (currentItem.value?._id) {
+        await axios.patch(`${url}nutrition/${currentItem.value._id}`, formData)
+        const data = await axios.get(`${url}nutrition/${currentItem.value._id}`)
+
+        currentItem.value.image = data.data.image;
+        isLoading.value = false;
+        return;
     }
-    useModal('nutritionModal').close();
+
+    const exercise = await axios.post(`${url}nutrition`, formData);
+
+    currentItem.value._id = exercise.data._id;
+    currentItem.value.image = exercise.data.image;
+
     isLoading.value = false;
-    window.location.reload();
 }
 
 

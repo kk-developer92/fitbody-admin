@@ -201,13 +201,6 @@ function close() {
 
 async function submit() {
     isLoading.value = true;
-    if (props.id === 'create') {
-        const data = await axios.post(`${url}${props.path}/`, course.value);
-        await axios.patch(`${url}${props.path}/${data.data._id}`, formData);
-        window.location.href = `http://localhost:3000/${props.path}`;
-        isLoading.value = false;
-        return;
-    }
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
     isLoading.value = false;
     useRouter().back();
@@ -217,10 +210,18 @@ async function getFile(e: any) {
     isLoading.value = true;
     formData.append('image', e.currentTarget.files[0]);
 
-    if (props.id !== 'create') {
-        await axios.patch(`${url}${props.path}/${props.id}`, formData);
+    if (props.id === 'create') {
+        const res = await axios.post(`${url}${props.path}`, formData);
+        isLoading.value = false;
+        // window.location.href = `https://admin.fitbody.uz/${res.data._id}`;
+        window.location.href = `http://localhost:3000/${props.path}/${res.data._id}`;
+        return;
     }
+
+    await axios.patch(`${url}${props.path}/${props.id}`, formData);
+
     await fetch();
+    isLoading.value = false;
 }
 
 async function deleteCourse() {
