@@ -33,16 +33,28 @@
                                        v-model="currentItem.title">
                             </label>
                         </div>
-                        <label class="flex flex-col gap-1 mt-4 w-full">
-                            <span>Видео</span>
-                            <input type="text"
-                                   class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                   v-model="currentItem.video">
-                        </label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <label class="flex flex-col gap-1 mt-4 w-full">
+                                <span>Видео</span>
+                                <input type="text"
+                                       class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                       v-model="currentItem.video">
+                            </label>
+                            <label class="flex flex-col gap-1 mt-4 w-full">
+                                <span>Категория</span>
+                                <select
+                                    class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                    v-model="currentItem.category">
+                                    <option value="Плечи">Плечи</option>
+                                    <option value="Ноги">Ноги</option>
+                                </select>
+                            </label>
+                        </div>
                     </div>
                 </div>
                 <div class="flex justify-between p-4 gap-2">
-                    <button v-if="currentItem?._id" @click.prevent="deleteIt" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                    <button v-if="currentItem?._id" @click.prevent="deleteIt"
+                            class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                         Удалить
                     </button>
                     <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
