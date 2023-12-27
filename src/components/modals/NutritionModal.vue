@@ -49,13 +49,22 @@
                                       :config="editorConfig"></ckeditor>
                         </div>
                         <h1 class="text-3xl">Контент</h1>
-                        <div v-for="content in currentItem.content"
+                        <div v-for="(content, idx) in currentItem.content"
                              class="w-full flex flex-col gap-1 border p-4 rounded-lg">
-                            <input type="text" class="text-lg w-1/3" v-model="content.title">
-                            <ckeditor :editor="editor" v-model="content.content"
-                                      :config="editorConfig"></ckeditor>
+                            <input type="text" class="text-2xl w-1/3" v-model="content.title">
+                            <div v-for="days in content.days" class="border-t pt-2 mt-1">
+                                <input type="text" class="text-lg w-1/3" v-model="days.title">
+                                <ckeditor :editor="editor" v-model="days.content"
+                                          :config="editorConfig"></ckeditor>
+                            </div>
+                            <button type="button"
+                                    @click="addContent(currentItem.content[idx].days, {title: 'Прием пищи', content: 'Что-то'})"
+                                    class="text-red-600">Добавить прием пищи
+                            </button>
                         </div>
-                        <button type="button" @click="addContent" class="text-red-600">Добавить блок</button>
+                        <button type="button" @click="addContent(currentItem.content, {title: 'День', days: []})"
+                                class="text-red-600">Добавить день
+                        </button>
                     </div>
                 </div>
                 <div class="flex justify-between p-4">
@@ -139,11 +148,8 @@ async function deleteNutrition() {
     isLoading.value = true;
 }
 
-function addContent() {
-    currentItem.value.content.push({
-        title: 'День',
-        content: ''
-    })
+function addContent(arr: any, data: any) {
+    arr.push(data);
 }
 </script>
 
