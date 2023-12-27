@@ -48,6 +48,14 @@
                             <ckeditor :editor="editor" v-model="currentItem.description"
                                       :config="editorConfig"></ckeditor>
                         </div>
+                        <h1 class="text-3xl">Контент</h1>
+                        <div v-for="content in currentItem.content"
+                             class="w-full flex flex-col gap-1 border p-4 rounded-lg">
+                            <input type="text" class="text-lg w-1/3" v-model="content.title">
+                            <ckeditor :editor="editor" v-model="content.content"
+                                      :config="editorConfig"></ckeditor>
+                        </div>
+                        <button type="button" @click="addContent" class="text-red-600">Добавить блок</button>
                     </div>
                 </div>
                 <div class="flex justify-between p-4">
@@ -129,6 +137,13 @@ async function deleteNutrition() {
     useModal('nutritionModal').close();
     window.location.reload();
     isLoading.value = true;
+}
+
+function addContent() {
+    currentItem.value.content.push({
+        title: 'День',
+        content: ''
+    })
 }
 </script>
 

@@ -1,8 +1,10 @@
 <template>
+    <loading class="absolute w-full h-screen top-0 left-0" v-if="isLoading"/>
     <div class="w-full h-screen flex items-center justify-center">
         <form class="p-4 border rounded-md w-[95%] sm:w-2/3 md:w-1/3" @submit.prevent="login">
             <h1 class="text-4xl font-medium text-red-500">Войти</h1>
-            <div class="w-full text-red-500 p-2 py-4 bg-red-200 border border-red-500 rounded-md mt-4" v-if="error.length">
+            <div class="w-full text-red-500 p-2 py-4 bg-red-200 border border-red-500 rounded-md mt-4"
+                 v-if="error.length">
                 {{ error }}
             </div>
             <div class="mt-4 flex flex-col-reverse">
@@ -36,11 +38,13 @@ const user: any = ref({
     phone: '',
     password: ''
 });
+const isLoading = ref(false);
 
 const error = ref('');
 const url = import.meta.env.VITE_API_URL;
 
 async function login() {
+    isLoading.value = true;
     if (user.value.phone === '' || user.value.password === '') {
         return error.value = 'Заполните все поля';
     }
@@ -57,6 +61,7 @@ async function login() {
     const token = useCookie('token');
     token.value = response.data.token;
 
+    isLoading.value = false;
     navigateTo('/');
 }
 
