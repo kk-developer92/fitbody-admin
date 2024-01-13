@@ -99,7 +99,13 @@
                                         <div v-for="(exercises, delIdx) in train.exercises" class="flex gap-3">
                                             <img class="w-16 rounded-md" :src="exercises.image" alt="">
                                             <div class="flex w-full items-center justify-between">
-                                                <span class="text-lg font-medium">{{ exercises.name }}</span>
+                                                <div class="flex flex-col">
+                                                    <span class="text-lg font-medium">{{ exercises.name }}</span>
+                                                    <div class="">
+                                                        <input type="text" class="border mr-2 w-10" v-model="exercises.repEach">
+                                                        <span>раз</span>
+                                                    </div>
+                                                </div>
                                                 <button type="button"
                                                         class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
                                                     <cross-icon
