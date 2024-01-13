@@ -1,0 +1,168 @@
+<template>
+    <loading class="absolute w-full h-screen top-0 left-0" v-if="isLoading"/>
+    <div class="w-full flex items-center justify-center">
+        <form class="w-full rounded-lg flex">
+            <div class="p-4 pl-0 w-1/3">
+                <label class="w-full">
+                    <image-uploader class="w-full h-96" :image="currentItem.image"/>
+                    <input type="file"
+                           @change="getFile"
+                           class="hidden">
+                </label>
+                <div class="flex flex-col gap-4">
+                    <div class="grid grid-cols-3 gap-4">
+                        <label class="flex flex-col gap-1 w-full">
+                            <span>Название</span>
+                            <input type="text"
+                                   class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                   v-model="currentItem.title">
+                        </label>
+                        <label class="flex flex-col gap-1 w-full">
+                            <span>Цена</span>
+                            <input type="number"
+                                   class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                   v-model="currentItem.price">
+                        </label>
+                        <div class="w-full">
+                            <span>Пол</span>
+                            <select v-model="currentItem.type"
+                                    class="w-full border p-2 rounded-lg outline-none mt-1">
+                                <option value="men">Мужской</option>
+                                <option value="women">Женский</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="w-full flex flex-col gap-1">
+                        <span>Описание</span>
+                        <ckeditor :editor="editor" v-model="currentItem.description"
+                                  :config="editorConfig"></ckeditor>
+                    </div>
+                </div>
+            </div>
+            <div class="w-2/3 flex flex-col gap-4 p-4">
+                <div class="flex flex-col gap-4">
+                    <h1 class="text-3xl">Контент</h1>
+                    <div v-for="(content, idx) in currentItem.content"
+                         class="w-full flex flex-col gap-1 border p-4 rounded-lg">
+                        <input type="text" class="text-2xl w-1/3 mb-2" v-model="content.title">
+                        <div v-for="days in content.days" class="border-t pt-2 mt-1">
+                            <input type="text" class="text-lg w-1/3" v-model="days.title">
+                            <ckeditor :editor="editor" v-model="days.content"
+                                      :config="editorConfig"></ckeditor>
+                        </div>
+                        <button type="button"
+                                @click="addContent(currentItem.content[idx].days, {title: 'Прием пищи', content: 'Что-то'})"
+                                class="text-red-600">Добавить прием пищи
+                        </button>
+                    </div>
+                    <button type="button" @click="addContent(currentItem.content, {title: 'День', days: []})"
+                            class="text-red-600 w-full">Добавить день
+                    </button>
+                </div>
+                <div class="flex justify-end gap-4">
+                    <button v-if="currentItem._id" @click.prevent="deleteNutrition"
+                            class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                        Удалить
+                    </button>
+                    <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</template>
+
+<script setup lang="ts">
+
+import ImageUploader from "~/components/ImageUploader.vue";
+import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
+import axios from "axios";
+
+const url = import.meta.env.VITE_API_URL;
+const currentItem: any = ref({content: []});
+const editor = ref(ClassicEditor);
+const editorConfig = ref({
+    language: 'ru'
+});
+const isLoading = ref(false);
+const errorMsg = ref('');
+const showMsg = ref(false);
+const formData = new FormData();
+const id = useRoute().params.id;
+
+async function fetch() {
+    const data = await axios.get(`${url}nutrition/${id}`);
+    currentItem.value = data.data;
+}
+
+if (id !== 'create') {
+    fetch();
+}
+
+async function submit() {
+    isLoading.value = true;
+
+    if (id === 'create') {
+        await axios.post(`${url}nutrition`, currentItem.value);
+        isLoading.value = false;
+        useRouter().back();
+        return;
+    }
+
+    try {
+        await axios.patch(`${url}nutrition/${currentItem.value._id}`, currentItem.value);
+        useRouter().back();
+    } catch (e) {
+        showMsg.value = true;
+        errorMsg.value = 'Что-то пошло не так!'
+    }
+    isLoading.value = false;
+}
+
+
+async function getFile(e: any) {
+    isLoading.value = true;
+    formData.append('image', e.currentTarget.files[0]);
+
+    if (id === 'create') {
+        const res = await axios.post(`${url}nutrition`, currentItem.value);
+        isLoading.value = false;
+        // window.location.href = `https://admin.fitbody.uz/${res.data._id}`;
+        window.location.href = `http://localhost:3000/nutrition/${res.data._id}`;
+        return;
+    }
+
+    if (currentItem.value?._id) {
+        await axios.patch(`${url}nutrition/${currentItem.value._id}`, formData)
+        const data = await axios.get(`${url}nutrition/${currentItem.value._id}`)
+
+        currentItem.value.image = data.data.image;
+        isLoading.value = false;
+        return;
+    }
+
+    const exercise = await axios.post(`${url}nutrition`, formData);
+
+    currentItem.value._id = exercise.data._id;
+    currentItem.value.image = exercise.data.image;
+
+    isLoading.value = false;
+}
+
+
+async function deleteNutrition() {
+    isLoading.value = true;
+    await axios.delete(`${url}nutrition/${currentItem.value._id}`);
+    useRouter().back();
+    isLoading.value = true;
+}
+
+function addContent(arr: any, data: any) {
+    arr.push(data);
+}
+</script>
+
+<style scoped>
+
+</style>

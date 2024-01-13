@@ -111,7 +111,7 @@
                                         <div class="w-full flex items-center justify-center">
                                             <span
                                                 @click="addTraining(train.exercises)"
-                                                class="text-red-600 text-lg select-none cursor-pointer">Добавить тренировку</span>
+                                                class="text-red-600 text-lg select-none cursor-pointer">Добавить упражнения</span>
                                         </div>
                                     </div>
                                 </div>
@@ -161,7 +161,7 @@ import {useModal} from '~/compasables/useModal';
 import AddExercises from "~/components/modals/AddExercises.vue";
 
 const props = defineProps<{ id: any, path: string }>();
-const course: any = ref({});
+const course: any = ref({exercises: []});
 const url = import.meta.env.VITE_API_URL;
 const formData = new FormData();
 
@@ -201,6 +201,12 @@ function close() {
 
 async function submit() {
     isLoading.value = true;
+    if (props.id === 'create') {
+        await axios.post(`${url}${props.path}`, course.value);
+        isLoading.value = false;
+        useRouter().back();
+        return;
+    }
     await axios.patch(`${url}${props.path}/${props.id}`, course.value);
     isLoading.value = false;
     useRouter().back();
