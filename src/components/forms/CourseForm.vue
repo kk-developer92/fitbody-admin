@@ -84,9 +84,9 @@
                                      class="p-2 mt-2 mb-4 border border-gray-400 rounded-lg">
                                     <div class="flex justify-between border-b">
                                         <div class="flex items-center gap-2 mb-3">
-                                            <span class="text-xl font-bold border-none">Подходы</span>
-                                            <input type="number" class="w-12 text-xl font-bold border-none"
-                                                   v-model="train.reps">
+                                            <span class="text-xl font-bold border-none">Тренировки</span>
+<!--                                            <input type="number" class="w-12 text-xl font-bold border-none"-->
+<!--                                                   v-model="train.reps">-->
                                         </div>
                                         <button type="button"
                                                 class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
@@ -123,6 +123,7 @@
                                 </div>
                                 <div class="w-full flex items-center justify-center">
                                     <span
+                                        v-if="!day.trainings.length"
                                         @click="addBlock(day.trainings, {reps: 1, exercises: []})"
                                         class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить блок тренировки</span>
                                 </div>
@@ -138,7 +139,7 @@
                         @click="addBlock(course.exercises, {name: 'Week', data:[]})"
                         class="w-full flex mt-10 items-center justify-center">
                         <span
-                            class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить неделью</span>
+                            class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить неделю</span>
                     </div>
                 </div>
             </div>
