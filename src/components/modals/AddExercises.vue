@@ -49,7 +49,7 @@ async function fetch() {
 
 
 function addToResult(data: any) {
-    result.value.push(data);
+    result.value.push({...data, result: {}});
 }
 
 function deleteResult(data: any) {
