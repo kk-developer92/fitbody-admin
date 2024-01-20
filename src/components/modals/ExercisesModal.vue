@@ -95,13 +95,21 @@ function shown(data: any) {
 
 async function submit() {
     isLoading.value = true;
-    try {
-        await axios.patch(`${url}exercises/${currentItem.value._id}`, currentItem.value);
+
+    if (!currentItem.value?._id) {
+        const exercise = await axios.post(`${url}exercises`, currentItem.value);
+        currentItem.value._id = exercise.data._id;
         window.location.reload();
-    } catch (e) {
-        showMsg.value = true;
-        errorMsg.value = 'Что-то пошло не так!'
+    } else {
+        try {
+            await axios.patch(`${url}exercises/${currentItem.value._id}`, currentItem.value);
+            window.location.reload();
+        } catch (e) {
+            showMsg.value = true;
+            errorMsg.value = 'Что-то пошло не так!'
+        }
     }
+
     isLoading.value = false;
 }
 
