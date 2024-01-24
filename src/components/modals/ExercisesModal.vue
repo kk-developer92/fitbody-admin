@@ -80,7 +80,6 @@
 import {useModal} from "~/compasables/useModal";
 import CrossIcon from "assets/icons/CrossIcon.vue";
 import ImageUploader from "~/components/ImageUploader.vue";
-import axios from "axios";
 
 const currentItem: any = ref({});
 const errorMsg = ref('');
@@ -97,12 +96,12 @@ async function submit() {
     isLoading.value = true;
 
     if (!currentItem.value?._id) {
-        const exercise = await axios.post(`${url}exercises`, currentItem.value);
+        const exercise = await useService('exercises').create(currentItem.value);
         currentItem.value._id = exercise.data._id;
         window.location.reload();
     } else {
         try {
-            await axios.patch(`${url}exercises/${currentItem.value._id}`, currentItem.value);
+            await useService('exercises').patch(currentItem.value._id, currentItem.value);
             window.location.reload();
         } catch (e) {
             showMsg.value = true;
@@ -118,15 +117,15 @@ async function getFile(e: any) {
     formData.append('image', e.currentTarget.files[0]);
 
     if (currentItem.value?._id) {
-        await axios.patch(`${url}exercises/${currentItem.value._id}`, formData)
-        const data = await axios.get(`${url}exercises/${currentItem.value._id}`)
+        await useService('exercises').patch(currentItem.value._id, formData);
+        const data = await useService('exercises').get(currentItem.value._id);
 
         currentItem.value.image = data.data.image;
         isLoading.value = false;
         return;
     }
 
-    const exercise = await axios.post(`${url}exercises`, formData);
+    const exercise = await useService('exercises').create(formData);
 
     currentItem.value._id = exercise.data._id;
     currentItem.value.image = exercise.data.image;
@@ -136,7 +135,7 @@ async function getFile(e: any) {
 
 async function deleteIt() {
     isLoading.value = true;
-    await axios.delete(`${url}exercises/${currentItem.value._id}`);
+    await useService('exercises').delete(currentItem.value._id);
     window.location.reload();
     isLoading.value = false;
 }

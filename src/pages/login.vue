@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 
-import axios from "axios";
+import useService from "~/utils/useService";
 
 definePageMeta({
     layout: false
@@ -48,21 +48,26 @@ async function login() {
     if (user.value.phone === '' || user.value.password === '') {
         return error.value = 'Заполните все поля';
     }
+    const token = useCookie('token');
 
-    const response = await axios.post('https://sea-turtle-app-27ah7.ondigitalocean.app/authorization', {
-        role: 'admin',
-        ...user.value
-    });
+    token.value = '';
 
-    if (response.status !== 200) {
-        return error.value = 'Что-то пошло не так';
+    let response;
+
+    try {
+        response = await useService('authentication').create({
+            strategy: 'local',
+            ...user.value
+        });
+
+        token.value = response.data.accessToken;
+        navigateTo('/');
+    } catch (e: any) {
+        error.value = e.response.data.message;
+    } finally {
+        isLoading.value = false;
     }
 
-    const token = useCookie('token');
-    token.value = response.data.token;
-
-    isLoading.value = false;
-    navigateTo('/');
 }
 
 </script>

@@ -32,7 +32,7 @@ const courses = ref([]);
 
 
 async function fetch() {
-    const {data} = await axios.get(url + 'trainings');
+    const {data} = await useService('trainings').find();
     courses.value = data.data;
 }
 

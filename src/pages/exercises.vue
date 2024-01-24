@@ -41,7 +41,6 @@ definePageMeta({
     middleware: 'auth'
 });
 
-import axios from "axios";
 import Loader from "~/components/Loader.vue";
 import {useModal} from "~/compasables/useModal";
 import EditIcon from "assets/icons/EditIcon.vue";
@@ -55,7 +54,7 @@ const categories: any = ref([]);
 
 
 async function fetch() {
-    const {data} = await axios.get(url + 'exercises');
+    const {data} = await useService('exercises').find();
     exercises.value = data.data;
     let exercise: any
     for (exercise of exercises.value) {

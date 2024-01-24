@@ -89,10 +89,10 @@ const isLoading = ref(false);
 const errorMsg = ref('');
 const showMsg = ref(false);
 const formData = new FormData();
-const id = useRoute().params.id;
+const id: any = useRoute().params.id;
 
 async function fetch() {
-    const data = await axios.get(`${url}nutrition/${id}`);
+    const data = await useService('nutrition').get(id);
     currentItem.value = data.data;
 }
 
@@ -104,14 +104,14 @@ async function submit() {
     isLoading.value = true;
 
     if (id === 'create') {
-        await axios.post(`${url}nutrition`, currentItem.value);
+        await useService('nutrition').create(currentItem.value);
         isLoading.value = false;
         useRouter().back();
         return;
     }
 
     try {
-        await axios.patch(`${url}nutrition/${currentItem.value._id}`, currentItem.value);
+        await useService('nutrition').patch(currentItem.value._id, currentItem.value);
         useRouter().back();
     } catch (e) {
         showMsg.value = true;
@@ -126,7 +126,7 @@ async function getFile(e: any) {
     formData.append('image', e.currentTarget.files[0]);
 
     if (id === 'create') {
-        const res = await axios.post(`${url}nutrition`, currentItem.value);
+        const res = await useService('nutrition').create(currentItem.value);
         isLoading.value = false;
         // window.location.href = `https://admin.fitbody.uz/${res.data._id}`;
         window.location.href = `http://localhost:3000/nutrition/${res.data._id}`;
@@ -134,15 +134,15 @@ async function getFile(e: any) {
     }
 
     if (currentItem.value?._id) {
-        await axios.patch(`${url}nutrition/${currentItem.value._id}`, formData)
-        const data = await axios.get(`${url}nutrition/${currentItem.value._id}`)
+        await useService('nutrition').patch(currentItem.value._id, formData);
+        const data = await useService('nutrition').get(currentItem.value._id);
 
         currentItem.value.image = data.data.image;
         isLoading.value = false;
         return;
     }
 
-    const exercise = await axios.post(`${url}nutrition`, formData);
+    const exercise = await useService('nutrition').create(formData);
 
     currentItem.value._id = exercise.data._id;
     currentItem.value.image = exercise.data.image;
@@ -153,7 +153,7 @@ async function getFile(e: any) {
 
 async function deleteNutrition() {
     isLoading.value = true;
-    await axios.delete(`${url}nutrition/${currentItem.value._id}`);
+    await useService('nutrition').delete(currentItem.value._id);
     useRouter().back();
     isLoading.value = true;
 }

@@ -85,8 +85,8 @@
                                     <div class="flex justify-between border-b">
                                         <div class="flex items-center gap-2 mb-3">
                                             <span class="text-xl font-bold border-none">Тренировки</span>
-<!--                                            <input type="number" class="w-12 text-xl font-bold border-none"-->
-<!--                                                   v-model="train.reps">-->
+                                            <!--                                            <input type="number" class="w-12 text-xl font-bold border-none"-->
+                                            <!--                                                   v-model="train.reps">-->
                                         </div>
                                         <button type="button"
                                                 class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
@@ -102,7 +102,8 @@
                                                 <div class="flex flex-col">
                                                     <span class="text-lg font-medium">{{ exercises.name }}</span>
                                                     <div class="">
-                                                        <input type="text" class="border mr-2 w-10" v-model="exercises.repEach">
+                                                        <input type="text" class="border mr-2 w-10"
+                                                               v-model="exercises.reps">
                                                         <span>раз</span>
                                                     </div>
                                                 </div>
@@ -160,7 +161,6 @@
 <script setup lang="ts">
 
 
-import axios from "axios";
 import ImageUploader from "~/components/ImageUploader.vue";
 import CrossIcon from "assets/icons/CrossIcon.vue";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -169,7 +169,6 @@ import AddExercises from "~/components/modals/AddExercises.vue";
 
 const props = defineProps<{ id: any, path: string }>();
 const course: any = ref({exercises: []});
-const url = import.meta.env.VITE_API_URL;
 const formData = new FormData();
 
 const editor = ref(ClassicEditor);
@@ -181,7 +180,7 @@ const isLoading = ref(false);
 
 async function fetch() {
     isLoading.value = true;
-    const {data} = await axios.get(url + `${props.path}/` + props.id);
+    const {data} = await useService(props.path).get(props.id);
     course.value = data;
     isLoading.value = false;
 }
@@ -209,12 +208,13 @@ function close() {
 async function submit() {
     isLoading.value = true;
     if (props.id === 'create') {
-        await axios.post(`${url}${props.path}`, course.value);
+        await useService(props.path).create(course.value);
         isLoading.value = false;
         useRouter().back();
         return;
     }
-    await axios.patch(`${url}${props.path}/${props.id}`, course.value);
+    await useService(props.path).patch(props.id, course.value);
+
     isLoading.value = false;
     useRouter().back();
 }
@@ -224,14 +224,15 @@ async function getFile(e: any) {
     formData.append('image', e.currentTarget.files[0]);
 
     if (props.id === 'create') {
-        const res = await axios.post(`${url}${props.path}`, formData);
+        const res = await useService(props.path).create(formData);
+
         isLoading.value = false;
         // window.location.href = `https://admin.fitbody.uz/${res.data._id}`;
         window.location.href = `http://localhost:3000/${props.path}/${res.data._id}`;
         return;
     }
 
-    await axios.patch(`${url}${props.path}/${props.id}`, formData);
+    await useService(props.path).patch(course.value._id, formData);
 
     await fetch();
     isLoading.value = false;
@@ -239,7 +240,7 @@ async function getFile(e: any) {
 
 async function deleteCourse() {
     isLoading.value = true;
-    await axios.delete(`${url}${props.path}/${course.value._id}`);
+    await useService(props.path).delete(course.value._id);
     window.location.href = `http://localhost:3000/${props.path}`;
     isLoading.value = false;
 }
