@@ -44,9 +44,19 @@
                     <h1 class="text-3xl">Контент</h1>
                     <div v-for="(content, idx) in currentItem.content"
                          class="w-full flex flex-col gap-1 border p-4 rounded-lg">
-                        <input type="text" class="text-2xl w-1/3 mb-2" v-model="content.title">
-                        <div v-for="days in content.days" class="border-t pt-2 mt-1">
-                            <input type="text" class="text-lg w-1/3" v-model="days.title">
+                        <div class="flex items-center justify-between">
+                            <input type="text" class="text-2xl w-1/3 mb-2" v-model="content.title">
+                            <cross-icon
+                                @click="deleteBlock(currentItem.content, idx)"
+                                class="cursor-pointer"/>
+                        </div>
+                        <div v-for="(days, index) in content.days" class="border-t pt-2 mt-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <input type="text" class="text-lg w-1/3" v-model="days.title">
+                                <cross-icon
+                                    @click="deleteBlock(content.days, index)"
+                                    class="cursor-pointer"/>
+                            </div>
                             <ckeditor :editor="editor" v-model="days.content"
                                       :config="editorConfig"></ckeditor>
                         </div>
@@ -77,7 +87,7 @@
 
 import ImageUploader from "~/components/ImageUploader.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
-import axios from "axios";
+import CrossIcon from "assets/icons/CrossIcon.vue";
 
 const url = import.meta.env.VITE_API_URL;
 const currentItem: any = ref({content: []});
@@ -160,6 +170,10 @@ async function deleteNutrition() {
 
 function addContent(arr: any, data: any) {
     arr.push(data);
+}
+
+function deleteBlock(data: any, idx: any) {
+    data.splice(idx, 1);
 }
 </script>
 
