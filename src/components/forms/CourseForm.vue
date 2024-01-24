@@ -225,10 +225,10 @@ async function getFile(e: any) {
 
     if (props.id === 'create') {
         const res = await useService(props.path).create(formData);
+        await useService(props.path).patch(res.data._id, course.value);
 
         isLoading.value = false;
-        // window.location.href = `https://admin.fitbody.uz/${res.data._id}`;
-        window.location.href = `http://localhost:3000/${props.path}/${res.data._id}`;
+        window.location.href = `https://admin.fitbody.uz/${props.path}/${res.data._id}`;
         return;
     }
 
@@ -241,7 +241,11 @@ async function getFile(e: any) {
 async function deleteCourse() {
     isLoading.value = true;
     await useService(props.path).delete(course.value._id);
-    window.location.href = `http://localhost:3000/${props.path}`;
+    if (props.path === 'courses') {
+        window.location.href = `https://admin.fitbody.uz/`;
+    } else {
+        window.location.href = `https://admin.fitbody.uz/${props.path}`;
+    }
     isLoading.value = false;
 }
 

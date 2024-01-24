@@ -89,7 +89,6 @@ import ImageUploader from "~/components/ImageUploader.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CrossIcon from "assets/icons/CrossIcon.vue";
 
-const url = import.meta.env.VITE_API_URL;
 const currentItem: any = ref({content: []});
 const editor = ref(ClassicEditor);
 const editorConfig = ref({
@@ -136,26 +135,17 @@ async function getFile(e: any) {
     formData.append('image', e.currentTarget.files[0]);
 
     if (id === 'create') {
-        const res = await useService('nutrition').create(currentItem.value);
+        const res = await useService('nutrition').create(formData);
+        await useService('nutrition').patch(res.data._id, currentItem.value);
         isLoading.value = false;
-        // window.location.href = `https://admin.fitbody.uz/${res.data._id}`;
-        window.location.href = `http://localhost:3000/nutrition/${res.data._id}`;
+        window.location.href = `https://admin.fitbody.uz/nutrition/${res.data._id}`;
         return;
     }
 
-    if (currentItem.value?._id) {
-        await useService('nutrition').patch(currentItem.value._id, formData);
-        const data = await useService('nutrition').get(currentItem.value._id);
+    const res = await useService('nutrition').patch(currentItem.value._id, formData);
 
-        currentItem.value.image = data.data.image;
-        isLoading.value = false;
-        return;
-    }
-
-    const exercise = await useService('nutrition').create(formData);
-
-    currentItem.value._id = exercise.data._id;
-    currentItem.value.image = exercise.data.image;
+    currentItem.value.image = res.data.image;
+    isLoading.value = false;
 
     isLoading.value = false;
 }
