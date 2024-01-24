@@ -20,8 +20,6 @@ export default (service: string) => {
         }
     };
     
-    console.log(config);
-    
     return {
         create(data: any) {
             return axios.post(url, data, config);
