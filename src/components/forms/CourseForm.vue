@@ -210,13 +210,21 @@ async function submit() {
     if (props.id === 'create') {
         await useService(props.path).create(course.value);
         isLoading.value = false;
-        useRouter().back();
+        if (props.path === 'courses') {
+            await useRouter().push('/');
+        } else {
+            await useRouter().push(`/${props.path}`);
+        }
         return;
     }
     await useService(props.path).patch(props.id, course.value);
 
     isLoading.value = false;
-    useRouter().back();
+    if (props.path === 'courses') {
+        await useRouter().push('/');
+    } else {
+        await useRouter().push(`/${props.path}`);
+    }
 }
 
 async function getFile(e: any) {
@@ -228,7 +236,7 @@ async function getFile(e: any) {
         await useService(props.path).patch(res.data._id, course.value);
 
         isLoading.value = false;
-        window.location.href = `https://admin.fitbody.uz/${props.path}/${res.data._id}`;
+        await useRouter().push(`/${props.path}/${res.data._id}`);
         return;
     }
 
@@ -242,9 +250,9 @@ async function deleteCourse() {
     isLoading.value = true;
     await useService(props.path).delete(course.value._id);
     if (props.path === 'courses') {
-        window.location.href = `https://admin.fitbody.uz/`;
+        await useRouter().push('/');
     } else {
-        window.location.href = `https://admin.fitbody.uz/${props.path}`;
+        await useRouter().push(`/${props.path}`);
     }
     isLoading.value = false;
 }
