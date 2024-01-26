@@ -84,7 +84,6 @@ import ImageUploader from "~/components/ImageUploader.vue";
 const currentItem: any = ref({});
 const errorMsg = ref('');
 const showMsg = ref(false);
-const url = import.meta.env.VITE_API_URL;
 const formData = new FormData();
 const isLoading = ref(false);
 

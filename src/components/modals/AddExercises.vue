@@ -28,11 +28,9 @@
 <script setup lang="ts">
 
 import CrossIcon from "assets/icons/CrossIcon.vue";
-import axios from "axios";
 
 
 const emit = defineEmits(['close'])
-const url = import.meta.env.VITE_API_URL;
 const exercises: any = ref([]);
 let result: any = ref([]);
 
@@ -42,14 +40,14 @@ function shown(data: any) {
 }
 
 async function fetch() {
-    const {data} = await axios.get(`${url}exercises`);
+    const {data} = await useService('exercises').find();
 
     exercises.value = data.data;
 }
 
 
 function addToResult(data: any) {
-    result.value.push({...data, result: {}});
+    result.value.push({...data, reps: '1x10-15'});
 }
 
 function deleteResult(data: any) {
