@@ -48,7 +48,6 @@ async function fetch() {
 
 
 function addToResult(data: any) {
-    console.log(uuidv4());
     result.value.push({...data, reps: '1x10-15', uniqueId: uuidv4()});
 }
 
