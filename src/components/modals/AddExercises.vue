@@ -28,6 +28,7 @@
 <script setup lang="ts">
 
 import CrossIcon from "assets/icons/CrossIcon.vue";
+import { v4 as uuidv4 } from 'uuid';
 
 
 const emit = defineEmits(['close'])
@@ -47,7 +48,8 @@ async function fetch() {
 
 
 function addToResult(data: any) {
-    result.value.push({...data, reps: '1x10-15'});
+    console.log(uuidv4());
+    result.value.push({...data, reps: '1x10-15', uniqueId: uuidv4()});
 }
 
 function deleteResult(data: any) {

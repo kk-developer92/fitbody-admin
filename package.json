@@ -11,6 +11,7 @@
     },
     "devDependencies": {
         "@nuxt/devtools": "latest",
+        "@types/uuid": "^9.0.8",
         "autoprefixer": "^10.4.16",
         "nuxt": "^3.7.4",
         "postcss": "^8.4.31",
@@ -26,6 +27,7 @@
         "@ckeditor/ckeditor5-link": "^40.0.0",
         "@ckeditor/ckeditor5-paragraph": "^40.0.0",
         "@ckeditor/ckeditor5-vue": "^5.1.0",
-        "axios": "^1.5.1"
+        "axios": "^1.5.1",
+        "uuid": "^9.0.1"
     }
 }
