@@ -6,12 +6,17 @@
                     <cross-icon @click="emit('close')" class="cursor-pointer"/>
                 </div>
                 <div class="flex flex-col gap-5 p-4">
-                    <div class="flex items-center" v-for="train in exercises">
-                        <input type="checkbox" class="w-4 h-4"
-                               @click="!$event.target.checked ? deleteResult(train) : addToResult(train)">
-                        <div class="flex items-center ml-5 gap-2">
-                            <img :src="train.image" class="w-10 h-10 rounded-md" alt="">
-                            <p class="font-semibold text-lg">{{ train.title }}</p>
+                    <div class="flex flex-col gap-2" v-for="category in categories">
+                        <h1 class="text-2xl mb-2">{{ category }}</h1>
+                        <div v-for="train in exercises" class="flex items-center" :class="{
+                        'hidden': train.category !== category
+                    }">
+                            <input type="checkbox" class="w-4 h-4"
+                                   @click="!$event.target.checked ? deleteResult(train) : addToResult(train)">
+                            <div class="flex items-center ml-5 gap-2">
+                                <img :src="train.image" class="w-10 h-10 rounded-md" alt="">
+                                <p class="font-semibold text-lg">{{ train.title }}</p>
+                            </div>
                         </div>
                     </div>
                     <div class="flex justify-end">
@@ -28,12 +33,13 @@
 <script setup lang="ts">
 
 import CrossIcon from "assets/icons/CrossIcon.vue";
-import { v4 as uuidv4 } from 'uuid';
+import {v4 as uuidv4} from 'uuid';
 
 
 const emit = defineEmits(['close'])
 const exercises: any = ref([]);
 let result: any = ref([]);
+const categories: any = ref([]);
 
 function shown(data: any) {
     fetch();
@@ -44,6 +50,14 @@ async function fetch() {
     const {data} = await useService('exercises').find();
 
     exercises.value = data.data;
+
+    let exercise: any;
+
+    for (exercise of exercises.value) {
+        if (!categories.value.includes(exercise?.category)) {
+            categories.value.push(exercise?.category);
+        }
+    }
 }
 
 
