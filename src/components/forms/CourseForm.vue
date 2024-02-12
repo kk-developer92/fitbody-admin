@@ -102,7 +102,7 @@
                                                 <div class="flex flex-col">
                                                     <span class="text-lg font-medium">{{ exercises.name }}</span>
                                                     <div class="">
-                                                        <input type="text" class="border mr-2 w-10"
+                                                        <input type="text" class="border mr-2 w-20"
                                                                v-model="exercises.reps">
                                                         <span>раз</span>
                                                     </div>

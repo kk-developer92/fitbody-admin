@@ -50,9 +50,10 @@
                                     <option value="Грудь">Грудь</option>
                                     <option value="Спина">Спина</option>
                                     <option value="Трапеция">Трапеция</option>
+                                    <option value="Бицепс">Бицепс</option>
+                                    <option value="Трицепс">Трицепс</option>
                                     <option value="Ноги">Ноги</option>
                                     <option value="Плечи">Плечи</option>
-                                    <option value="Руки">Руки</option>
                                     <option value="Ягодицы">Ягодицы</option>
                                     <option value="Пресс">Пресс</option>
                                     <option value="Кардио">Кардио</option>
