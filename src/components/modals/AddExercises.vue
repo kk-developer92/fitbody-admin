@@ -62,7 +62,8 @@ async function fetch() {
 
 
 function addToResult(data: any) {
-    result.value.push({...data, reps: '1x10-15', uniqueId: uuidv4()});
+    result.value.push({...data, exerciseId: data._id, reps: '1x10-15', uniqueId: uuidv4()});
+    console.log(result.value);
 }
 
 function deleteResult(data: any) {

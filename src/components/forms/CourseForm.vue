@@ -182,6 +182,18 @@ async function fetch() {
     isLoading.value = true;
     const {data} = await useService(props.path).get(props.id);
     course.value = data;
+    for (let i of course.value.exercises) {
+        for (let j of i.data) {
+            for (let k of j.trainings) {
+                for (let l of k.exercises) {
+                    const res = await useService('exercises').get(l.exerciseId);
+                    l.image = res.data.image;
+                    l.name = res.data.name;
+                    l.title = res.data.title;
+                }
+            }
+        }
+    }
     isLoading.value = false;
 }
 
