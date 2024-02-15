@@ -28,11 +28,12 @@ export default (service: string) => {
             return axios.get(url, {
                 params: {
                     query: params
-                }
+                },
+                ...config
             });
         },
         get(id: string) {
-            return axios.get(`${url}/${id}`);
+            return axios.get(`${url}/${id}`, config);
         },
         patch(id: string, data: any) {
             return axios.patch(`${url}/${id}`, data, config);
