@@ -13,7 +13,13 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         return navigateTo('/login');
     }
     
-    const res = await useService('users').get(token.sub);
+    let res: any = {};
+    
+    try {
+        res = await useService('users').get(token.sub)
+    } catch (e) {
+        return navigateTo('/login');
+    }
     
     if (!res.data.phone) {
         return navigateTo('/login');
