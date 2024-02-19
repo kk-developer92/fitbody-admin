@@ -166,6 +166,7 @@ import CrossIcon from "assets/icons/CrossIcon.vue";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {useModal} from '~/compasables/useModal';
 import AddExercises from "~/components/modals/AddExercises.vue";
+import {MediaEmbed} from '@ckeditor/ckeditor5-media-embed';
 
 const props = defineProps<{ id: any, path: string }>();
 const course: any = ref({exercises: []});
