@@ -57,7 +57,8 @@ async function login() {
     try {
         response = await useService('authentication').create({
             strategy: 'local',
-            ...user.value
+            ...user.value,
+            role: 'admin'
         });
 
         token.value = response.data.accessToken;
