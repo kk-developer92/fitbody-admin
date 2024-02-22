@@ -92,7 +92,10 @@ import CrossIcon from "assets/icons/CrossIcon.vue";
 const currentItem: any = ref({content: []});
 const editor = ref(ClassicEditor);
 const editorConfig = ref({
-    language: 'ru'
+    language: 'ru',
+    mediaEmbed: {
+        previewsInData: true
+    }
 });
 const isLoading = ref(false);
 const errorMsg = ref('');
