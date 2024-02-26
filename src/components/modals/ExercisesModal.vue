@@ -45,8 +45,6 @@
                                 <select
                                     class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
                                     v-model="currentItem.category">
-                                    <option value="Плечи">Плечи</option>
-                                    <option value="Ноги">Ноги</option>
                                     <option value="Грудь">Грудь</option>
                                     <option value="Спина">Спина</option>
                                     <option value="Трапеция">Трапеция</option>
