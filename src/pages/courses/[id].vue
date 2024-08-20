@@ -132,7 +132,6 @@
 </template>
 
 <script setup lang="ts">
-
 import ImageUploader from "~/components/ImageUploader.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CrossIcon from "assets/icons/CrossIcon.vue";
