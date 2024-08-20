@@ -15,7 +15,7 @@
                                    @click="!$event.target.checked ? deleteResult(train) : addToResult(train)">
                             <div class="flex items-center ml-5 gap-2">
                                 <img :src="train.image" class="w-10 h-10 rounded-md" alt="">
-                                <p class="font-semibold text-lg">{{ train.title }}</p>
+                                <p class="font-semibold text-lg">{{ train.ruTitle }}</p>
                             </div>
                         </div>
                     </div>
@@ -33,17 +33,16 @@
 <script setup lang="ts">
 
 import CrossIcon from "assets/icons/CrossIcon.vue";
-import {v4 as uuidv4} from 'uuid';
 
-
-const emit = defineEmits(['close'])
+const emit = defineEmits(['close', 'fetch'])
 const exercises: any = ref([]);
-let result: any = ref([]);
 const categories: any = ref([]);
+const dayList: any = ref({});
+
 
 function shown(data: any) {
     fetch();
-    result.value = data;
+    dayList.value = data;
 }
 
 async function fetch() {
@@ -61,17 +60,30 @@ async function fetch() {
 }
 
 
-function addToResult(data: any) {
-    result.value.push({...data, exerciseId: data._id, reps: '1x10-15', uniqueId: uuidv4()});
-    console.log(result.value);
+async function addToResult(data: any) {
+    const body = {
+        exerciseId: data.id,
+        dayListId: dayList.value.dayListId,
+        reps: '1x10-15'
+    }
+
+    await useService('exercise-mtm').create(body);
 }
 
-function deleteResult(data: any) {
-    result.value.splice(result.value.indexOf(data), 1);
+async function deleteResult(data: any) {
+    const res = await useService('exercise-mtm').find({
+        exerciseId: +data.id,
+        dayListId: dayList.value.dayListId,
+        reps: '1x10-15'
+    });
+
+    await useService('exercise-mtm').delete(res.data.data.at(-1).id);
 }
 
-function submit() {
+
+async function submit() {
     emit('close');
+    emit('fetch');
 }
 
 </script>

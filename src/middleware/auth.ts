@@ -1,7 +1,7 @@
 import {parseJwt} from "~/utils/useService";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-    const cookies = useCookie('token');
+    const cookies = useCookie('fbt');
     
     if (!cookies.value) {
         return navigateTo('/login');
@@ -9,19 +9,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     
     const token = parseJwt(cookies.value);
     
-    if (!token?.sub) {
+    if (!token?.id) {
         return navigateTo('/login');
     }
-    
-    let res: any = {};
-    
-    try {
-        res = await useService('users').get(token.sub)
-    } catch (e) {
-        return navigateTo('/login');
-    }
-    
-    if (!res.data.phone) {
-        return navigateTo('/login');
-    }
-})
+});

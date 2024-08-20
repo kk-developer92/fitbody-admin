@@ -12,11 +12,11 @@ export function parseJwt(token: string) {
 
 export default (service: string) => {
     const url = `${import.meta.env.VITE_API_URL}/${service}`;
-    const token = useCookie('token');
+    const token = useCookie('fbt');
     
     const config = {
         headers: {
-            Authorization: token.value
+            Authorization: `Bearer ${token.value}`
         }
     };
     
@@ -26,9 +26,7 @@ export default (service: string) => {
         },
         find(params?: any) {
             return axios.get(url, {
-                params: {
-                    query: params
-                },
+                params: params,
                 ...config
             });
         },
@@ -38,7 +36,7 @@ export default (service: string) => {
         patch(id: string, data: any) {
             return axios.patch(`${url}/${id}`, data, config);
         },
-        delete(id: string) {
+        delete(id: number) {
             return axios.delete(`${url}/${id}`, config);
         }
     };

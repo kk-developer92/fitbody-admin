@@ -21,16 +21,16 @@
                     <div class="">
                         <div class="grid grid-cols-2 gap-4">
                             <label class="flex flex-col gap-1 w-full">
-                                <span>Название</span>
+                                <span>Заголовок(ru)</span>
                                 <input type="text"
                                        class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                       v-model="currentItem.name">
+                                       v-model="currentItem.ruTitle">
                             </label>
                             <label class="flex flex-col gap-1 w-full">
-                                <span>Заголовок</span>
+                                <span>Заголовок(uz)</span>
                                 <input type="text"
                                        class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                       v-model="currentItem.title">
+                                       v-model="currentItem.uzTitle">
                             </label>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
@@ -61,11 +61,11 @@
                     </div>
                 </div>
                 <div class="flex justify-between p-4 gap-2">
-                    <button v-if="currentItem?._id" @click.prevent="deleteIt"
+                    <button v-if="currentItem?.id" @click.prevent="deleteExercise"
                             class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                         Удалить
                     </button>
-                    <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                    <button @click.prevent="save" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                         Сохранить
                     </button>
                 </div>
@@ -85,57 +85,46 @@ const errorMsg = ref('');
 const showMsg = ref(false);
 const formData = new FormData();
 const isLoading = ref(false);
+const emit = defineEmits(['fetch']);
 
-function shown(data: any) {
-    currentItem.value = data;
-}
 
-async function submit() {
-    isLoading.value = true;
-
-    if (!currentItem.value?._id) {
-        const exercise = await useService('exercises').create(currentItem.value);
-        currentItem.value._id = exercise.data._id;
-        window.location.reload();
-    } else {
-        try {
-            await useService('exercises').patch(currentItem.value._id, currentItem.value);
-            window.location.reload();
-        } catch (e) {
-            showMsg.value = true;
-            errorMsg.value = 'Что-то пошло не так!'
-        }
-    }
-
-    isLoading.value = false;
+async function shown(data: any) {
+    const res = await useService('exercises').get(data.id);
+    currentItem.value = res.data.data;
 }
 
 async function getFile(e: any) {
     isLoading.value = true;
+
     formData.append('image', e.currentTarget.files[0]);
 
-    if (currentItem.value?._id) {
-        await useService('exercises').patch(currentItem.value._id, formData);
-        const data = await useService('exercises').get(currentItem.value._id);
+    await useService('exercises').patch(currentItem.value.id, formData);
 
-        currentItem.value.image = data.data.image;
-        isLoading.value = false;
-        return;
-    }
+    emit('fetch');
 
-    const exercise = await useService('exercises').create(formData);
-
-    currentItem.value._id = exercise.data._id;
-    currentItem.value.image = exercise.data.image;
+    await shown({id: currentItem.value.id});
 
     isLoading.value = false;
 }
 
-async function deleteIt() {
-    isLoading.value = true;
-    await useService('exercises').delete(currentItem.value._id);
-    window.location.reload();
-    isLoading.value = false;
+async function save() {
+    const modal = useModal('exercisesModal');
+
+    await useService('exercises').patch(currentItem.value.id, currentItem.value);
+
+    emit('fetch');
+
+    modal.close();
+}
+
+async function deleteExercise() {
+    const modal = useModal('exercisesModal');
+
+    await useService('exercises').delete(currentItem.value.id);
+
+    emit('fetch');
+
+    modal.close();
 }
 
 </script>

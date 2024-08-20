@@ -1,77 +1,114 @@
 <template>
-    <loading class="absolute w-full h-screen top-0 left-0" v-if="isLoading"/>
+    <loading class="absolute w-full h-screen top-0 left-0" v-if="isLoading" />
     <div class="w-full flex items-center justify-center">
         <form class="w-full rounded-lg flex">
             <div class="p-4 pl-0 w-1/3">
                 <label class="w-full">
-                    <image-uploader class="w-full h-96" :image="currentItem.image"/>
-                    <input type="file"
-                           @change="getFile"
-                           class="hidden">
+                    <image-uploader class="w-full h-96" :image="currentItem.image" />
+                    <input type="file" @change="getFile" class="hidden">
                 </label>
                 <div class="flex flex-col gap-4">
                     <div class="grid grid-cols-3 gap-4">
                         <label class="flex flex-col gap-1 w-full">
-                            <span>Название</span>
-                            <input type="text"
-                                   class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                   v-model="currentItem.title">
+                            <span>Название(ru)</span>
+                            <input type="text" @input="debouncedCourse(currentItem)"
+                                class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                v-model="currentItem.ruTitle">
+                        </label>
+                        <label class="flex flex-col gap-1 w-full">
+                            <span>Название(uz)</span>
+                            <input type="text" @input="debouncedCourse(currentItem)"
+                                class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                v-model="currentItem.uzTitle">
                         </label>
                         <label class="flex flex-col gap-1 w-full">
                             <span>Цена</span>
-                            <input type="number"
-                                   class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                   v-model="currentItem.price">
+                            <input type="number" @input="debouncedCourse(currentItem)"
+                                class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                v-model="currentItem.price">
                         </label>
                         <div class="w-full">
                             <span>Пол</span>
-                            <select v-model="currentItem.type"
-                                    class="w-full border p-2 rounded-lg outline-none mt-1">
-                                <option value="men">Мужской</option>
-                                <option value="women">Женский</option>
+                            <select @change="debouncedCourse(currentItem)" v-model="currentItem.type"
+                                class="w-full border p-2 rounded-lg outline-none mt-1">
+                                <option value="0">Мужской</option>
+                                <option value="1">Женский</option>
                             </select>
                         </div>
                     </div>
                     <div class="w-full flex flex-col gap-1">
-                        <span>Описание</span>
-                        <ckeditor :editor="editor" v-model="currentItem.description"
-                                  :config="editorConfig"></ckeditor>
+                        <span>Описание(ru)</span>
+                        <ckeditor @input="debouncedCourse(currentItem)" :editor="editor"
+                            v-model="currentItem.ruDescription" :config="editorConfig"></ckeditor>
+                    </div>
+                    <div class="w-full flex flex-col gap-1">
+                        <span>Описание(uz)</span>
+                        <ckeditor @input="debouncedCourse(currentItem)" :editor="editor"
+                            v-model="currentItem.uzDescription" :config="editorConfig"></ckeditor>
+                    </div>
+                    <div class="w-full flex flex-col gap-1">
+                        <span>О программе(ru)</span>
+                        <ckeditor @input="debouncedCourse(currentItem)" :editor="editor" v-model="currentItem.ruAbout"
+                            :config="editorConfig"></ckeditor>
+                    </div>
+                    <div class="w-full flex flex-col gap-1">
+                        <span>О программе(uz)</span>
+                        <ckeditor @input="debouncedCourse(currentItem)" :editor="editor" v-model="currentItem.uzAbout"
+                            :config="editorConfig"></ckeditor>
                     </div>
                 </div>
             </div>
             <div class="w-2/3 flex flex-col gap-4 p-4">
                 <div class="flex flex-col gap-4">
                     <h1 class="text-3xl">Контент</h1>
-                    <div v-for="(content, idx) in currentItem.content"
-                         class="w-full flex flex-col gap-1 border p-4 rounded-lg">
+                    <div v-for="week in currentItem.weeks" class="w-full flex flex-col gap-1 border p-4 rounded-lg">
                         <div class="flex items-center justify-between">
-                            <input type="text" class="text-2xl w-1/3 mb-2" v-model="content.title">
-                            <cross-icon
-                                @click="deleteBlock(currentItem.content, idx)"
-                                class="cursor-pointer"/>
-                        </div>
-                        <div v-for="(days, index) in content.days" class="border-t pt-2 mt-1">
-                            <div class="flex items-center justify-between mb-2">
-                                <input type="text" class="text-lg w-1/3" v-model="days.title">
-                                <cross-icon
-                                    @click="deleteBlock(content.days, index)"
-                                    class="cursor-pointer"/>
+                            <div class="flex gap-2 items-center">
+                                <b class="">Ru: </b>
+                                <input type="text" class="text-2xl w-1/3 mb-2" v-model="week.ruTitle"
+                                    @input="debouncedWeek(week)">
                             </div>
-                            <ckeditor :editor="editor" v-model="days.content"
-                                      :config="editorConfig"></ckeditor>
+
+                            <div class="flex gap-2 items-center">
+                                <b>Uz: </b>
+                                <input type="text" class="text-2xl w-1/3 mb-2" v-model="week.uzTitle"
+                                    @input="debouncedWeek(week)">
+                            </div>
+                            <cross-icon @click="deleteWeek(week.id)" class="cursor-pointer" />
                         </div>
-                        <button type="button"
-                                @click="addContent(currentItem.content[idx].days, {title: 'Прием пищи', content: 'Что-то'})"
-                                class="text-red-600">Добавить прием пищи
+                        <div v-for="days in week.days" class="border-t pt-2 mt-1 flex flex-col gap-2">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex gap-2 items-center">
+                                    <b class="">Ru: </b>
+                                    <input type="text" class="text-2xl w-1/3 mb-2" v-model="days.ruTitle"
+                                        @input="debouncedDay(days)">
+                                </div>
+
+                                <div class="flex gap-2 items-center">
+                                    <b>Uz: </b>
+                                    <input type="text" class="text-2xl w-1/3 mb-2" v-model="days.uzTitle"
+                                        @input="debouncedDay(days)">
+                                </div>
+                                <cross-icon @click="deleteDay(days.id)" class="cursor-pointer" />
+                            </div>
+                            <label for="">Контент (uz)</label>
+                            <ckeditor @input="debouncedDay(days)" :editor="editor" v-model="days.uzContent"
+                                :config="editorConfig"></ckeditor>
+                            <label for="">Контент (ru)</label>
+                            <ckeditor @input="debouncedDay(days)" :editor="editor" v-model="days.ruContent"
+                                :config="editorConfig"></ckeditor>
+                        </div>
+                        <button type="button" @click="addDay({ weekId: week.id, uzTitle: '', ruTitle: '', content: '' })"
+                            class="text-red-600">Добавить прием пищи
                         </button>
                     </div>
-                    <button type="button" @click="addContent(currentItem.content, {title: 'День', days: []})"
-                            class="text-red-600 w-full">Добавить день
+                    <button type="button" @click="addWeek({ nutritionId: currentItem.id, uzTitle: '', ruTitle: '' })"
+                        class="text-red-600 w-full">Добавить день
                     </button>
                 </div>
                 <div class="flex justify-end gap-4">
-                    <button v-if="currentItem._id" @click.prevent="deleteNutrition"
-                            class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
+                    <button v-if="currentItem.id" @click.prevent="deleteNutrition"
+                        class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                         Удалить
                     </button>
                     <button @click.prevent="submit" class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
@@ -88,8 +125,9 @@
 import ImageUploader from "~/components/ImageUploader.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CrossIcon from "assets/icons/CrossIcon.vue";
+import { useDebounceFn } from "@vueuse/core/index";
 
-const currentItem: any = ref({content: []});
+const currentItem: any = ref({ content: [] });
 const editor = ref(ClassicEditor);
 const editorConfig = ref({
     language: 'ru',
@@ -98,78 +136,88 @@ const editorConfig = ref({
     }
 });
 const isLoading = ref(false);
-const errorMsg = ref('');
-const showMsg = ref(false);
 const formData = new FormData();
 const id: any = useRoute().params.id;
 
 async function fetch() {
     const data = await useService('nutrition').get(id);
-    currentItem.value = data.data;
+
+    currentItem.value = data.data.data;
 }
 
-if (id !== 'create') {
-    fetch();
-}
+fetch();
 
 async function submit() {
-    isLoading.value = true;
-
-    if (id === 'create') {
-        await useService('nutrition').create(currentItem.value);
-        isLoading.value = false;
-        useRouter().back();
-        return;
-    }
-
-    try {
-        await useService('nutrition').patch(currentItem.value._id, currentItem.value);
-        useRouter().back();
-    } catch (e) {
-        showMsg.value = true;
-        errorMsg.value = 'Что-то пошло не так!'
-    }
-    isLoading.value = false;
+    await useRouter().push('/nutrition');
 }
 
 
 async function getFile(e: any) {
     isLoading.value = true;
+
     formData.append('image', e.currentTarget.files[0]);
 
-    if (id === 'create') {
-        const res = await useService('nutrition').create(formData);
-        await useService('nutrition').patch(res.data._id, currentItem.value);
-        isLoading.value = false;
-        window.location.href = `https://admin.fitbody.uz/nutrition/${res.data._id}`;
-        return;
-    }
-
-    const res = await useService('nutrition').patch(currentItem.value._id, formData);
-
-    currentItem.value.image = res.data.image;
-    isLoading.value = false;
+    await useService('nutrition').patch(currentItem.value.id, formData);
 
     isLoading.value = false;
+
+    await fetch();
 }
 
 
 async function deleteNutrition() {
     isLoading.value = true;
-    await useService('nutrition').delete(currentItem.value._id);
-    useRouter().back();
+
+    await useService('nutrition').delete(currentItem.value.id);
+
+    await useRouter().push('/nutrition');
+
     isLoading.value = true;
 }
 
-function addContent(arr: any, data: any) {
-    arr.push(data);
+async function addWeek(data: any) {
+    await useService('weeks').create(data);
+
+    await fetch();
 }
 
-function deleteBlock(data: any, idx: any) {
-    data.splice(idx, 1);
+async function addDay(data: any) {
+    await useService('days').create(data);
+
+    await fetch();
 }
+
+async function deleteWeek(id: any) {
+    await useService('weeks').delete(id);
+
+    await fetch();
+}
+
+async function deleteDay(id: any) {
+    await useService('days').delete(id);
+
+    await fetch();
+}
+
+const debouncedCourse = useDebounceFn(async (data: any) => {
+    await useService('nutrition').patch(data.id, data);
+
+    await fetch();
+}, 1000)
+
+
+const debouncedWeek = useDebounceFn(async (data: any) => {
+    await useService('weeks').patch(data.id, data);
+
+    await fetch();
+}, 1000)
+
+const debouncedDay = useDebounceFn(async (data: any) => {
+    await useService('days').patch(data.id, data);
+
+    await fetch();
+}, 1000)
+
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

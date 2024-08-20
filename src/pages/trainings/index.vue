@@ -1,12 +1,10 @@
 <template>
     <div>
         <div class="flex justify-between items-center mt-5">
-            <search-by-regex @search="searchIt"/>
-            <nuxt-link href="/trainings/create">
-                <button class="p-2 px-6 bg-red-600 rounded-lg text-white">
-                    Добавить
-                </button>
-            </nuxt-link>
+            <!--            <search-by-regex @search="searchIt"/>-->
+            <button @click="createTraining" class="p-2 px-6 bg-red-600 rounded-lg text-white">
+                Добавить
+            </button>
         </div>
         <div v-if="courses.length" class="w-full grid md:grid-cols-2 lg:grid-cols-3 py-6 gap-4">
             <train-block :courses="courses" path="trainings"/>
@@ -18,7 +16,6 @@
 </template>
 
 <script setup lang="ts">
-import axios from "axios";
 import Loader from "~/components/Loader.vue";
 import TrainBlock from "~/components/TrainBlock.vue";
 
@@ -27,7 +24,6 @@ definePageMeta({
     middleware: 'auth'
 });
 
-const url = import.meta.env.VITE_API_URL;
 const courses = ref([]);
 
 
@@ -36,15 +32,16 @@ async function fetch() {
     courses.value = data.data;
 }
 
-async function searchIt(str: string) {
-    await fetch();
+async function createTraining() {
+    try {
+        const res = await useService('trainings').create({});
 
-    if (str === 'men' || str === 'women') {
-        courses.value = courses.value.filter((el: any) => el.type === str)
-    } else {
-        courses.value = courses.value.filter((el: any) => el.title.toLowerCase().includes(str.toLowerCase()))
+        await useRouter().push(`/trainings/${res.data.id}`);
+    } catch (e: any) {
+        console.log(e.message);
     }
 }
+
 
 fetch();
 </script>

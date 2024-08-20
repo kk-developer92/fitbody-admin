@@ -14,6 +14,9 @@
                 <nuxt-link href="/exercises" :class="{
                     'router-link-exact-active': isActive('exercises')
                 }">Упражнения</nuxt-link>
+                <nuxt-link href="/products" :class="{
+                    'router-link-exact-active': isActive('products')
+                }">Продукты</nuxt-link>
             </div>
         </div>
         <nuxt-page></nuxt-page>

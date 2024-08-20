@@ -13,96 +13,150 @@
                     <div class="flex flex-col gap-4">
                         <div class="grid grid-cols-3 gap-4">
                             <label class="flex flex-col gap-1 w-full">
-                                <span>Название</span>
+                                <span>Название(ru)</span>
                                 <input type="text"
                                        class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                       v-model="course.title">
+                                       @input="debouncedCourse(course)"
+                                       v-model="course.ruTitle">
+                            </label>
+
+                            <label class="flex flex-col gap-1 w-full">
+                                <span>Название(uz)</span>
+                                <input type="text"
+                                       @input="debouncedCourse(course)"
+                                       class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                       v-model="course.uzTitle">
                             </label>
                             <label class="flex flex-col gap-1 w-full">
                                 <span>Цена</span>
                                 <input type="number"
+                                       @input="debouncedCourse(course)"
                                        class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
                                        v-model="course.price">
                             </label>
                             <div class="w-full">
                                 <span>Пол</span>
-                                <select v-model="course.type" class="w-full border p-2 rounded-lg outline-none mt-1">
-                                    <option value="men">Мужской</option>
-                                    <option value="women">Женский</option>
+                                <select
+                                    @change="debouncedCourse(course)"
+                                    v-model="course.type" class="w-full border p-2 rounded-lg outline-none mt-1">
+                                    <option value="0">Мужской</option>
+                                    <option value="1">Женский</option>
                                 </select>
                             </div>
                             <div class="w-full">
                                 <span>Сложность</span>
-                                <select v-model="course.complexity"
-                                        class="w-full border p-2 rounded-lg outline-none mt-1">
-                                    <option value="beginner">Начинаюший</option>
-                                    <option value="advanced">Продвинутый</option>
+                                <select
+                                    @change="debouncedCourse(course)"
+                                    v-model="course.complexity"
+                                    class="w-full border p-2 rounded-lg outline-none mt-1">
+                                    <option value="0">Начинаюший</option>
+                                    <option value="1">Продвинутый</option>
                                 </select>
                             </div>
                         </div>
-                        <div v-if="props.path === 'courses'" class="w-full flex flex-col gap-1">
-                            <span>Краткое описание</span>
-                            <ckeditor :editor="editor" v-model="course.shortDescription"
-                                      :config="editorConfig"></ckeditor>
+                        <div class="w-full flex flex-col gap-1">
+                            <span>О программе(ru)</span>
+                            <ckeditor
+                                @input="debouncedCourse(course)"
+                                :editor="editor" v-model="course.ruAbout"
+                                :config="editorConfig"></ckeditor>
                         </div>
                         <div class="w-full flex flex-col gap-1">
-                            <span>О программе</span>
-                            <ckeditor :editor="editor" v-model="course.about_program"
-                                      :config="editorConfig"></ckeditor>
+                            <span>О программе(uz)</span>
+                            <ckeditor
+                                @input="debouncedCourse(course)"
+                                :editor="editor" v-model="course.uzAbout"
+                                :config="editorConfig"></ckeditor>
                         </div>
                         <div class="w-full flex flex-col gap-1">
-                            <span>Описание</span>
-                            <ckeditor :editor="editor" v-model="course.description" :config="editorConfig"></ckeditor>
+                            <span>Описание(ru)</span>
+                            <ckeditor
+                                @input="debouncedCourse(course)"
+                                :editor="editor" v-model="course.ruDescription" :config="editorConfig"></ckeditor>
+                        </div>
+                        <div class="w-full flex flex-col gap-1">
+                            <span>Описание(uz)</span>
+                            <ckeditor
+                                @input="debouncedCourse(course)"
+                                :editor="editor" v-model="course.uzDescription" :config="editorConfig"></ckeditor>
                         </div>
                     </div>
                 </div>
                 <div class="w-2/3">
-                    <div v-if="course.exercises?.length"
+                    <div v-if="course.weeks?.length"
                          class="flex flex-col gap-5">
-                        <div class="border border-gray-400 p-2 rounded-lg" v-for="(week, idx) in course.exercises">
+                        <div class="border border-gray-400 p-2 rounded-lg" v-for="week in course.weeks">
                             <div class="flex justify-between">
-                                <input type="text" class="text-2xl font-bold border-none" v-model="week.name">
+                                <div class="flex gap-2 items-center">
+                                    <b class="">Ru: </b>
+                                    <input type="text" class="text-2xl w-1/3 mb-2" v-model="week.ruTitle"
+                                           @input="debouncedWeek(week)"
+                                    >
+                                </div>
+
+                                <div class="flex gap-2 items-center">
+                                    <b>Uz: </b>
+                                    <input type="text" class="text-2xl w-1/3 mb-2" v-model="week.uzTitle"
+                                           @input="debouncedWeek(week)"
+                                    >
+                                </div>
                                 <button type="button"
                                         class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
-                                    <cross-icon
-                                        @click="deleteBlock(course.exercises, idx)"
-                                    />
+                                            <cross-icon
+                                                @click="deleteWeek(week)"
+                                            />
                                 </button>
                             </div>
-                            <div v-if="week.data?.length" v-for="(day, index) in week.data"
+                            <div v-if="week.days?.length" v-for="day in week.days"
                                  class="w-full p-2 border border-gray-400  rounded-lg mt-2">
                                 <div class="flex justify-between">
-                                    <input type="text" class="text-xl font-bold border-none" v-model="day.name">
+                                    <div class="flex gap-2 items-center">
+                                        <b class="">Ru: </b>
+                                        <input type="text" class="text-2xl w-1/3 mb-2" v-model="day.ruTitle"
+                                               @input="debouncedDay(day)"
+                                        >
+                                    </div>
+
+                                    <div class="flex gap-2 items-center">
+                                        <b>Uz: </b>
+                                        <input type="text" class="text-2xl w-1/3 mb-2" v-model="day.uzTitle"
+                                               @input="debouncedDay(day)"
+                                        >
+                                    </div>
                                     <button type="button"
                                             class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
-                                        <cross-icon
-                                            @click="deleteBlock(week.data, index)"
-                                            class="cursor-pointer"/>
+                                            <cross-icon
+                                                @click="deleteDay(day)"
+                                                class="cursor-pointer"/>
                                     </button>
                                 </div>
-                                <div v-for="(train, ind) in day.trainings"
+                                <div v-for="dayList in day.dayList"
                                      class="p-2 mt-2 mb-4 border border-gray-400 rounded-lg">
                                     <div class="flex justify-between border-b">
                                         <div class="flex items-center gap-2 mb-3">
                                             <span class="text-xl font-bold border-none">Тренировки</span>
-                                            <!--                                            <input type="number" class="w-12 text-xl font-bold border-none"-->
-                                            <!--                                                   v-model="train.reps">-->
+                                            <input type="number" class="w-12 text-xl font-bold border-none"
+                                                   @input="debouncedDayList(dayList)"
+                                                   v-model="dayList.reps">
                                         </div>
                                         <button type="button"
                                                 class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
                                             <cross-icon
-                                                @click="deleteBlock(day.trainings, ind)"
+                                                @click="deleteDayList(dayList)"
                                                 class="cursor-pointer"/>
                                         </button>
                                     </div>
                                     <div class="flex flex-col gap-2 mt-2">
-                                        <div v-for="(exercises, delIdx) in train.exercises" class="flex gap-3">
-                                            <img class="w-16 rounded-md" :src="exercises.image" alt="">
+                                        <div v-for="exercises in dayList.exercises" class="flex gap-3">
+                                            <img class="w-16 rounded-md" :src="exercises.exercise.image" alt="">
                                             <div class="flex w-full items-center justify-between">
                                                 <div class="flex flex-col">
-                                                    <span class="text-lg font-medium">{{ exercises.name }}</span>
+                                                    <span class="text-lg font-medium">{{
+                                                            exercises.exercise.ruTitle
+                                                        }}</span>
                                                     <div class="">
                                                         <input type="text" class="border mr-2 w-20"
+                                                               @input="debouncedExercise(exercises)"
                                                                v-model="exercises.reps">
                                                         <span>раз</span>
                                                     </div>
@@ -110,34 +164,33 @@
                                                 <button type="button"
                                                         class="w-8 h-8 hover:bg-gray-200 flex items-center justify-center rounded-full">
                                                     <cross-icon
-                                                        @click="deleteBlock(train.exercises, delIdx)"
+                                                        @click="deleteExercise(exercises)"
                                                         class="cursor-pointer"/>
                                                 </button>
                                             </div>
                                         </div>
                                         <div class="w-full flex items-center justify-center">
                                             <span
-                                                @click="addTraining(train.exercises)"
+                                                @click="addExercise({dayListId: dayList.id})"
                                                 class="text-red-600 text-lg select-none cursor-pointer">Добавить упражнения</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="w-full flex items-center justify-center">
                                     <span
-                                        v-if="!day.trainings.length"
-                                        @click="addBlock(day.trainings, {reps: 1, exercises: []})"
+                                        @click="addDayList({dayId: day.id, reps: 0})"
                                         class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить блок тренировки</span>
                                 </div>
                             </div>
                             <div class="w-full flex mt-3 items-center justify-center">
                                 <span
-                                    @click="addBlock(week.data, {name: 'Some day', trainings: []})"
+                                    @click="addDay({weekId: week.id, uzTitle: '', ruTitle: '', content: ''})"
                                     class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить день</span>
                             </div>
                         </div>
                     </div>
                     <div
-                        @click="addBlock(course.exercises, {name: 'Week', data:[]})"
+                        @click="addWeek({trainingId: course.id, uzTitle: '', ruTitle: ''})"
                         class="w-full flex mt-10 items-center justify-center">
                         <span
                             class="text-red-600 text-lg select-none cursor-pointer text-center">Добавить неделю</span>
@@ -145,7 +198,7 @@
                 </div>
             </div>
             <div class="flex justify-between">
-                <button v-if="course._id" @click="deleteCourse" type="button"
+                <button v-if="course.id" @click="deleteCourse" type="button"
                         class="p-2 px-6 bg-red-600 rounded-lg text-white mt-5">
                     Удалить
                 </button>
@@ -154,7 +207,7 @@
                 </button>
             </div>
         </form>
-        <add-exercises @close="close"/>
+        <add-exercises @close="close" @fetch="fetch"/>
     </div>
 </template>
 
@@ -162,16 +215,15 @@
 
 
 import ImageUploader from "~/components/ImageUploader.vue";
-import CrossIcon from "assets/icons/CrossIcon.vue";
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import {useModal} from '~/compasables/useModal';
 import AddExercises from "~/components/modals/AddExercises.vue";
+import {useDebounceFn} from "@vueuse/core";
+import CrossIcon from "assets/icons/CrossIcon.vue";
 
-const props = defineProps<{ id: any, path: string }>();
-const course: any = ref({exercises: []});
-const formData = new FormData();
-
+const course: any = ref({});
 const editor = ref(ClassicEditor);
+const id: any = useRoute().params.id;
 const editorConfig = ref({
     language: 'ru',
     mediaEmbed: {
@@ -182,95 +234,118 @@ const modal = useModal('addModal');
 const isLoading = ref(false);
 
 async function fetch() {
-    isLoading.value = true;
-    const {data} = await useService(props.path).get(props.id);
-    course.value = data;
-    for (let i of course.value.exercises) {
-        for (let j of i.data) {
-            for (let k of j.trainings) {
-                for (let l of k.exercises) {
-                    const res = await useService('exercises').get(l.exerciseId);
-                    l.image = res.data.image;
-                    l.name = res.data.name;
-                    l.title = res.data.title;
-                }
-            }
-        }
-    }
-    isLoading.value = false;
+    const {data} = await useService('trainings').get(id);
+
+    course.value = data.data;
 }
 
-if (props.id !== 'create') {
-    fetch();
-}
+fetch();
 
-function addBlock(data: any, obj: any) {
-    data.push(obj);
-}
 
-function deleteBlock(data: any, index: any) {
-    data.splice(index, 1);
-}
-
-function addTraining(data: any) {
-    modal.open(data);
-}
-
-function close() {
+async function close() {
     modal.close();
 }
 
 async function submit() {
-    isLoading.value = true;
-    if (props.id === 'create') {
-        await useService(props.path).create(course.value);
-        isLoading.value = false;
-        if (props.path === 'courses') {
-            await useRouter().push('/');
-        } else {
-            await useRouter().push(`/${props.path}`);
-        }
-        return;
-    }
-    await useService(props.path).patch(props.id, course.value);
-
-    isLoading.value = false;
-    if (props.path === 'courses') {
-        await useRouter().push('/');
-    } else {
-        await useRouter().push(`/${props.path}`);
-    }
+    await useRouter().push('/trainings');
 }
 
 async function getFile(e: any) {
-    isLoading.value = true;
+    const formData = new FormData();
+
     formData.append('image', e.currentTarget.files[0]);
 
-    if (props.id === 'create') {
-        const res = await useService(props.path).create(formData);
-        await useService(props.path).patch(res.data._id, course.value);
-
-        isLoading.value = false;
-        await useRouter().push(`/${props.path}/${res.data._id}`);
-        return;
+    try {
+        await useService('trainings').patch(course.value.id, formData);
+    } catch (e: any) {
+        console.log(e);
     }
-
-    await useService(props.path).patch(course.value._id, formData);
 
     await fetch();
-    isLoading.value = false;
 }
 
+
 async function deleteCourse() {
-    isLoading.value = true;
-    await useService(props.path).delete(course.value._id);
-    if (props.path === 'courses') {
-        await useRouter().push('/');
-    } else {
-        await useRouter().push(`/${props.path}`);
-    }
-    isLoading.value = false;
+    await useService('trainings').delete(id);
+
+    await useRouter().push('/trainings');
 }
+
+async function addWeek(data: any) {
+    await useService('weeks').create(data);
+
+    await fetch();
+}
+
+async function addDay(data: any) {
+    await useService('days').create(data);
+
+    await fetch();
+}
+
+async function addDayList(data: any) {
+    await useService('day-list').create(data);
+
+    await fetch();
+}
+
+async function addExercise(data: any) {
+    modal.open(data);
+}
+
+async function deleteExercise(data: any) {
+    await useService('exercise-mtm').delete(data.id);
+
+    await fetch();
+}
+
+async function deleteDayList(data: any) {
+    await useService('day-list').delete(data.id);
+
+    await fetch();
+}
+
+async function deleteDay(data: any) {
+    await useService('days').delete(data.id);
+
+    await fetch();
+}
+
+async function deleteWeek(data: any) {
+    await useService('weeks').delete(data.id);
+
+    await fetch();
+}
+
+const debouncedWeek = useDebounceFn(async (data: any) => {
+    await useService('weeks').patch(data.id, data);
+
+    await fetch();
+}, 1000)
+
+const debouncedDay = useDebounceFn(async (data: any) => {
+    await useService('days').patch(data.id, data);
+
+    await fetch();
+}, 1000)
+
+const debouncedCourse = useDebounceFn(async (data: any) => {
+    await useService('trainings').patch(id, data);
+
+    await fetch();
+}, 1000)
+
+const debouncedDayList = useDebounceFn(async (data: any) => {
+    await useService('day-list').patch(data.id, data);
+
+    await fetch();
+}, 1000)
+
+const debouncedExercise = useDebounceFn(async (data: any) => {
+    await useService('exercise-mtm').patch(data.id, data);
+
+    await fetch();
+}, 1000)
 
 </script>
 

@@ -8,10 +8,10 @@
                 {{ error }}
             </div>
             <div class="mt-4 flex flex-col-reverse">
-                <input v-model="user.phone" type="text" class="border p-2 rounded-md outline-none w-full"
+                <input v-model="user.email" type="text" class="border p-2 rounded-md outline-none w-full"
                        id="floatingInput"
                        placeholder="Номер телефона">
-                <label for="floatingInput">Номер телефона</label>
+                <label for="floatingInput">Почта</label>
             </div>
             <div class="mt-4 flex flex-col-reverse">
                 <input v-model="user.password" type="password" class="border p-2 rounded-md outline-none w-full"
@@ -35,7 +35,7 @@ definePageMeta({
 });
 
 const user: any = ref({
-    phone: '',
+    email: '',
     password: ''
 });
 const isLoading = ref(false);
@@ -45,21 +45,17 @@ const url = import.meta.env.VITE_API_URL;
 
 async function login() {
     isLoading.value = true;
-    if (user.value.phone === '' || user.value.password === '') {
+    if (user.value.email === '' || user.value.password === '') {
         return error.value = 'Заполните все поля';
     }
-    const token = useCookie('token');
+    const token = useCookie('fbt');
 
     token.value = '';
 
     let response;
 
     try {
-        response = await useService('authentication').create({
-            strategy: 'local',
-            ...user.value,
-            role: 'admin'
-        });
+        response = await useService('admins/signin').create(user.value);
 
         token.value = response.data.accessToken;
         navigateTo('/');
