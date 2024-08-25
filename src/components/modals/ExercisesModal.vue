@@ -21,16 +21,19 @@
                     <div class="">
                         <div class="grid grid-cols-2 gap-4">
                             <label class="flex flex-col gap-1 w-full">
-                                <span>Заголовок(ru)</span>
-                                <input type="text"
-                                       class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                       v-model="currentItem.ruTitle">
+                                <span>Категория</span>
+                                <select
+                                    class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                    v-model="currentItem.lang">
+                                    <option value="ru">Русский</option>
+                                    <option value="uz">Узбекский</option>
+                                </select>
                             </label>
                             <label class="flex flex-col gap-1 w-full">
-                                <span>Заголовок(uz)</span>
+                                <span>Заголовок</span>
                                 <input type="text"
                                        class="border p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                       v-model="currentItem.uzTitle">
+                                       v-model="currentItem.title">
                             </label>
                         </div>
                         <div class="grid grid-cols-2 gap-4">

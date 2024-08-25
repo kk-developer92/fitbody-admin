@@ -2,9 +2,6 @@
     <div class="w-[90%] mx-auto py-4">
         <div class="w-full">
             <div class="flex gap-3">
-                <nuxt-link href="/" :class="{
-                    'router-link-exact-active': isActive('courses')
-                }">Курсы</nuxt-link>
                 <nuxt-link href="/trainings" :class="{
                     'router-link-exact-active': isActive('trainings')
                 }">Тренировка</nuxt-link>

@@ -58,7 +58,7 @@ async function login() {
         response = await useService('admins/signin').create(user.value);
 
         token.value = response.data.accessToken;
-        navigateTo('/');
+        navigateTo('/trainings');
     } catch (e: any) {
         error.value = e.response.data.message;
     } finally {
