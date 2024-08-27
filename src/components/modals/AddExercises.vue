@@ -12,7 +12,7 @@
                             'hidden': train.category !== category
                         }">
                             <input type="checkbox" class="w-4 h-4"
-                                @click="!$event.target.checked ? deleteResult(train) : addToResult(train)">
+                                @click="!$event?.target?.checked ? deleteResult(train) : addToResult(train)">
                             <div class="flex items-center ml-5 gap-2">
                                 <img :src="train.image" class="w-10 h-10 rounded-md" alt="">
                                 <p class="font-semibold text-lg">{{ train.title }}</p>
@@ -34,10 +34,9 @@
 </template>
 
 <script setup lang="ts">
-
 import CrossIcon from "assets/icons/CrossIcon.vue";
 
-const emit = defineEmits(['close', 'fetch'])
+const emit = defineEmits(['close', 'fetch']);
 const exercises: any = ref([]);
 const categories: any = ref([]);
 const dayList: any = ref({});
@@ -50,6 +49,7 @@ function shown(data: any) {
 }
 
 async function fetch() {
+    categories.value = [];
     const { data } = await useService('exercises').find();
 
     exercises.value = data.data.filter((item: any) => item.lang === lang.value);
