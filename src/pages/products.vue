@@ -6,7 +6,7 @@
             </button>
         </div>
         <div class="flex flex-col mt-6">
-            <table class="table-fixed border-collapse border border-slate-200 ">
+            <table class="table-fixed border-collapse border border-slate-200 w-full">
                 <thead>
                     <tr>
                         <th class="text-left border-collapse border border-slate-200 p-2">ID</th>
@@ -23,25 +23,32 @@
                     <tr v-for="i in products">
                         <td class="p-2 border-collapse border border-slate-200">{{ i.id }}</td>
                         <td class="border-collapse border border-slate-200">
-                            <input v-model="i.ruName" @input="updateProduct(i)" type="text" class="p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
+                            <input v-model="i.ruName" @input="updateProduct(i)" type="text"
+                                class="w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
                         </td>
                         <td class="border-collapse border border-slate-200">
-                            <input v-model="i.uzName" @input="updateProduct(i)" type="text" class="p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
+                            <input v-model="i.uzName" @input="updateProduct(i)" type="text"
+                                class="w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
                         </td>
                         <td class="border-collapse border border-slate-200">
-                            <input v-model="i.count" @input="updateProduct(i)" type="number" class="p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
+                            <input v-model="i.count" @input="updateProduct(i)" type="number"
+                                class="w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
                         </td>
                         <td class="border-collapse border border-slate-200">
-                            <input v-model="i.protein" @input="updateProduct(i)" type="number" class="p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
+                            <input v-model="i.protein" @input="updateProduct(i)" type="number"
+                                class="w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
                         </td>
                         <td class="border-collapse border border-slate-200">
-                            <input v-model="i.fat" @input="updateProduct(i)" type="number" class="p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
+                            <input v-model="i.fat" @input="updateProduct(i)" type="number"
+                                class="w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
                         </td>
                         <td class="border-collapse border border-slate-200">
-                            <input v-model="i.Carbohydrates" @input="updateProduct(i)" type="number" class="p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
+                            <input v-model="i.Carbohydrates" @input="updateProduct(i)" type="number"
+                                class="w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
                         </td>
                         <td class="border-collapse border border-slate-200">
-                            <input v-model="i.calories" @input="updateProduct(i)" type="number" class="p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
+                            <input v-model="i.calories" @input="updateProduct(i)" type="number"
+                                class="w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500">
                         </td>
                     </tr>
                 </tbody>
@@ -51,7 +58,7 @@
 </template>
 
 <script lang="ts" setup>
-import {useDebounceFn} from '@vueuse/core';
+import { useDebounceFn } from '@vueuse/core';
 
 const products = ref(await fetchProducts());
 
@@ -68,6 +75,8 @@ async function fetchProducts() {
 }
 
 const updateProduct = useDebounceFn(async (data: any) => {
+    data.calories = ((data.protein + data.fat) * 4) + (data.Carbohydrates * 9);
+
     await useService('products').patch(data.id, data);
 }, 1000)
 </script>
