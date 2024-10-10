@@ -11,7 +11,6 @@ definePageMeta({
 });
 
 await useRouter().push('/trainings');
-
 </script>
 
 <style scoped>
