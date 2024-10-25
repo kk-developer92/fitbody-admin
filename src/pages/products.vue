@@ -9,14 +9,14 @@
             <table class="table-fixed border-collapse border border-slate-200 w-full">
                 <thead>
                     <tr>
-                        <th class="text-left border-collapse border border-slate-200 p-2">ID</th>
+                        <th class="text-left border-collapse border border-slate-200 p-2 !w-10">ID</th>
                         <th class="text-left border-collapse border border-slate-200 p-2">Названия (ru)</th>
                         <th class="text-left border-collapse border border-slate-200 p-2">Названия (uz)</th>
-                        <th class="text-left border-collapse border border-slate-200 p-2">Количество</th>
-                        <th class="text-left border-collapse border border-slate-200 p-2">Белок (г)</th>
-                        <th class="text-left border-collapse border border-slate-200 p-2">Жир (г)</th>
-                        <th class="text-left border-collapse border border-slate-200 p-2">Углевод (г)</th>
-                        <th class="text-left border-collapse border border-slate-200 p-2">Калории</th>
+                        <th class="text-left border-collapse border border-slate-200 p-2 !w-28">Количество</th>
+                        <th class="text-left border-collapse border border-slate-200 p-2 !w-24">Белок (г)</th>
+                        <th class="text-left border-collapse border border-slate-200 p-2 !w-24">Жир (г)</th>
+                        <th class="text-left border-collapse border border-slate-200 p-2 !w-28">Углевод (г)</th>
+                        <th class="text-left border-collapse border border-slate-200 p-2 !w-24">Калории</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -75,7 +75,8 @@ async function fetchProducts() {
 }
 
 const updateProduct = useDebounceFn(async (data: any) => {
-    data.calories = ((data.protein + data.fat) * 4) + (data.Carbohydrates * 9);
+    data.calories = ((data.protein + data.Carbohydrates) * 4) + (data.fat * 9);
+    // (C20+E20)*4+D20*9
 
     await useService('products').patch(data.id, data);
 }, 1000)
