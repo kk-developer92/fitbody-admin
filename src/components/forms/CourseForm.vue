@@ -46,6 +46,12 @@
                                     <option value="1">Продвинутый</option>
                                 </select>
                             </div>
+                            <label class="w-full">
+                                <span>Срок</span>
+                                <input type="number"
+                                    class="border w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                    @input="debouncedExpiration(course, $event)" :value="Math.round(course.expiresInMs / 86400000)">
+                            </label>
                         </div>
                         <div class="w-full flex flex-col gap-1">
                             <span>О программе</span>
@@ -243,7 +249,7 @@ async function addDayList(data: any) {
 }
 
 async function addExercise(data: any) {
-    modal.open({data, lang: course.value.lang});
+    modal.open({ data, lang: course.value.lang });
 }
 
 async function deleteExercise(data: any) {
@@ -279,6 +285,11 @@ const debouncedDay = useDebounceFn(async (data: any) => {
 }, 1500)
 
 const debouncedCourse = useDebounceFn(async (data: any) => {
+    await useService('trainings').patch(id, data);
+}, 1500)
+
+const debouncedExpiration = useDebounceFn(async (data: any, e: any) => {
+    data.expiresInMs = +e.target.value * 86400000;
     await useService('trainings').patch(id, data);
 }, 1500)
 
