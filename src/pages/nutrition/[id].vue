@@ -37,6 +37,13 @@
                                 <option value="1">Женский</option>
                             </select>
                         </div>
+                        <label class="w-full">
+                            <span>Срок</span>
+                            <input type="number"
+                                class="border w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
+                                @input="debouncedExpiration(currentItem, $event)"
+                                :value="Math.round(currentItem.expiresInMs / 86400000)">
+                        </label>
                     </div>
                     <div class="w-full flex flex-col gap-1">
                         <span>Описание</span>
@@ -187,6 +194,11 @@ const debouncedWeek = useDebounceFn(async (data: any) => {
 
 const debouncedDay = useDebounceFn(async (data: any) => {
     await useService('days').patch(data.id, data);
+}, 1500)
+
+const debouncedExpiration = useDebounceFn(async (data: any, e: any) => {
+    data.expiresInMs = +e.target.value * 86400000;
+    await useService('nutrition').patch(id, data);
 }, 1500)
 
 </script>
