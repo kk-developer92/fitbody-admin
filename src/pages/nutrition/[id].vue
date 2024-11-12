@@ -62,16 +62,16 @@
                     <h1 class="text-3xl">Контент</h1>
                     <div v-for="week in currentItem.weeks" class="w-full flex flex-col gap-1 border p-4 rounded-lg">
                         <div class="flex items-center justify-between">
-                            <div class="flex gap-2 items-center">
-                                <input type="text" class="text-2xl w-2/3 mb-2" v-model="week.title"
+                            <div class="flex gap-2 items-center w-full">
+                                <input type="text" class="text-2xl mb-2 w-full" v-model="week.title"
                                     @input="debouncedWeek(week)">
                             </div>
                             <cross-icon @click="deleteWeek(week.id)" class="cursor-pointer" />
                         </div>
                         <div v-for="days in week.days" class="border-t pt-2 mt-1 flex flex-col gap-2">
                             <div class="flex items-center justify-between mb-2">
-                                <div class="flex gap-2 items-center">
-                                    <input type="text" class="text-2xl w-1/3 mb-2" v-model="days.title"
+                                <div class="flex gap-2 items-center w-full">
+                                    <input type="text" class="text-2xl w-full mb-2" v-model="days.title"
                                         @input="debouncedDay(days)">
                                 </div>
                                 <cross-icon @click="deleteDay(days.id)" class="cursor-pointer" />

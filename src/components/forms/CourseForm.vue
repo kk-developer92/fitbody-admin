@@ -50,7 +50,8 @@
                                 <span>Срок</span>
                                 <input type="number"
                                     class="border w-full p-2 rounded-lg outline-none focus:border-2 focus:border-red-500"
-                                    @input="debouncedExpiration(course, $event)" :value="Math.round(course.expiresInMs / 86400000)">
+                                    @input="debouncedExpiration(course, $event)"
+                                    :value="Math.round(course.expiresInMs / 86400000)">
                             </label>
                         </div>
                         <div class="w-full flex flex-col gap-1">
@@ -69,8 +70,8 @@
                     <div v-if="course.weeks?.length" class="flex flex-col gap-5">
                         <div class="border border-gray-400 p-2 rounded-lg" v-for="week in course.weeks">
                             <div class="flex justify-between">
-                                <div class="flex gap-2 items-center">
-                                    <input type="text" class="text-2xl w-2/3 mb-2" v-model="week.title"
+                                <div class="flex gap-2 items-center  w-full">
+                                    <input type="text" class="text-2xl w-full mb-2" v-model="week.title"
                                         @input="debouncedWeek(week)">
                                 </div>
                                 <button type="button"
@@ -81,8 +82,8 @@
                             <div v-if="week.days?.length" v-for="day in week.days"
                                 class="w-full p-2 border border-gray-400  rounded-lg mt-2">
                                 <div class="flex justify-between">
-                                    <div class="flex gap-2 items-center">
-                                        <input type="text" class="text-2xl w-2/3 mb-2" v-model="day.title"
+                                    <div class="flex gap-2 items-center w-full">
+                                        <input type="text" class="text-2xl w-full mb-2" v-model="day.title"
                                             @input="debouncedDay(day)">
                                     </div>
                                     <button type="button"
@@ -110,7 +111,7 @@
                                                 <div class="flex flex-col">
                                                     <span class="text-lg font-medium">{{
                                                         exercises.exercise.title
-                                                        }}</span>
+                                                    }}</span>
                                                     <div class="">
                                                         <input type="text" class="border mr-2 w-20"
                                                             @input="debouncedExercise(exercises)"
@@ -174,16 +175,55 @@ import { useModal } from '~/compasables/useModal';
 import AddExercises from "~/components/modals/AddExercises.vue";
 import { useDebounceFn } from "@vueuse/core";
 import CrossIcon from "assets/icons/CrossIcon.vue";
+import axios from "axios";
 
 const course: any = ref({});
 const editor = ref(ClassicEditor);
 const id: any = useRoute().params.id;
 const editorConfig = ref({
     language: 'ru',
+    items: ['insertImage'],
     mediaEmbed: {
         previewsInData: true
-    }
+    },
+    extraPlugins: [MyCustomUploadAdapterPlugin]
 });
+
+function MyCustomUploadAdapterPlugin(editor: any) {
+    editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
+        return new MyUploadAdapter(loader);
+    };
+}
+
+class MyUploadAdapter {
+    loader: any
+    constructor(loader: any) {
+        this.loader = loader;
+    }
+
+    async upload() {
+        const file = await this.loader.file;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/upload`, formData);
+
+            return {
+                default: response.data.url
+            };
+        } catch (error) {
+            console.error('Upload failed:', error);
+            throw error;
+        }
+    }
+
+    abort() {
+        // Cleanup if upload is aborted
+    }
+}
+
 const modal = useModal('addModal');
 const isLoading = ref(false);
 
