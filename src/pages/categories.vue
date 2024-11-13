@@ -34,7 +34,7 @@ const categories: any = ref([]);
 async function fetch() {
     const data = await useService('categories').find();
 
-    categories.value = data.data;
+    categories.value = data.data.sort((a: any, b: any) => a.id - b.id);
 }
 
 fetch();

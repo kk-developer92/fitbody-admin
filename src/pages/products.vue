@@ -71,12 +71,12 @@ async function createProdcut() {
 async function fetchProducts() {
     const res = await useService('products').find();
 
-    return res.data.data;
+
+    return res.data.data.sort((a: any, b: any) => a.id - b.id);
 }
 
 const updateProduct = useDebounceFn(async (data: any) => {
     data.calories = ((data.protein + data.Carbohydrates) * 4) + (data.fat * 9);
-    // (C20+E20)*4+D20*9
 
     await useService('products').patch(data.id, data);
 }, 1000)
