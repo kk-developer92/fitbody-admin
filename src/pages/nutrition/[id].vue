@@ -108,15 +108,54 @@ import ImageUploader from "~/components/ImageUploader.vue";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import CrossIcon from "assets/icons/CrossIcon.vue";
 import { useDebounceFn } from "@vueuse/core/index";
+import axios from "axios";
 
 const currentItem: any = ref({ content: [] });
 const editor = ref(ClassicEditor);
+
 const editorConfig = ref({
     language: 'ru',
+    items: ['insertImage'],
     mediaEmbed: {
         previewsInData: true
-    }
+    },
+    extraPlugins: [MyCustomUploadAdapterPlugin],
 });
+
+function MyCustomUploadAdapterPlugin(editor: any) {
+    editor.plugins.get('FileRepository').createUploadAdapter = (loader: any) => {
+        return new MyUploadAdapter(loader);
+    };
+}
+
+class MyUploadAdapter {
+    loader: any
+    constructor(loader: any) {
+        this.loader = loader;
+    }
+
+    async upload() {
+        const file = await this.loader.file;
+
+        const formData = new FormData();
+        formData.append('image', file);
+
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/upload`, formData);
+
+            return {
+                default: response.data.url
+            };
+        } catch (error) {
+            console.error('Upload failed:', error);
+            throw error;
+        }
+    }
+
+    abort() {
+        // Cleanup if upload is aborted
+    }
+}
 const isLoading = ref(false);
 const formData = new FormData();
 const id: any = useRoute().params.id;

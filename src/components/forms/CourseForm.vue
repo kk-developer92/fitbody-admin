@@ -318,28 +318,28 @@ async function deleteWeek(data: any) {
 
 const debouncedWeek = useDebounceFn(async (data: any) => {
     await useService('weeks').patch(data.id, data);
-}, 10)
+}, 100)
 
 const debouncedDay = useDebounceFn(async (data: any) => {
     await useService('days').patch(data.id, data);
-}, 10)
+}, 100)
 
 const debouncedCourse = useDebounceFn(async (data: any) => {
     await useService('trainings').patch(id, data);
-}, 10)
+}, 100)
 
 const debouncedExpiration = useDebounceFn(async (data: any, e: any) => {
     data.expiresInMs = +e.target.value * 86400000;
     await useService('trainings').patch(id, data);
-}, 10)
+}, 100)
 
 const debouncedDayList = useDebounceFn(async (data: any) => {
     await useService('day-list').patch(data.id, data);
-}, 10)
+}, 100)
 
 const debouncedExercise = useDebounceFn(async (data: any) => {
     await useService('exercise-mtm').patch(data.id, data);
-}, 10)
+}, 100)
 
 </script>
 
